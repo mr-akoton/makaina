@@ -1,0 +1,8 @@
+# Settings and dependencies
+.vscode
+external/glm
+
+# File to avoid
+*.o
+makaina
+compile_flags.txt

@@ -8,8 +8,9 @@ LIB_DIR		:= ./lib
 
 UTL_DIR		:= ./util
 GRP_DIR		:= ./graphic
+GUI_DIR		:= ./gui
 COR_DIR		:= ./core
-WRL_DIR		:= ./world
+SCN_DIR		:= ./scene
 
 INC_DIR		:= ./include
 EXT_DIR		:= ./external
@@ -27,10 +28,10 @@ CXX			:= g++
 ifeq ($(BUILD_TYPE), release)
 	CXXFLAGS = -Wall -Wextra -O2 -DNDEBUG -std=c++17
 else
-	CXXFLAGS = -Wall -Wextra -Werror -Wpedantic -g -O0 -std=c++17
+	CXXFLAGS = -Wall -Wextra -Wpedantic -O0 -std=c++17
 endif
 
-CXXFLAGS	+= -I $(INC_DIR) -I $(EXT_DIR)
+CXXFLAGS	+= -I $(INC_DIR) -I $(EXT_DIR) -I $(EXT_DIR)/imgui
 LDFLAGS		:= -L $(LIB_DIR) -lglfw -lGL -lX11 -lpthread -lXrandr -lXi -ldl
 
 RM			:= rm -rf
@@ -46,12 +47,21 @@ C_OBJ		:= $(C_SRC:.c=.o)
 
 # -------------------------------- C++ Files --------------------------------- #
 
-LIB_FILES	:= stb_image.cpp
+LIB_FILES	:= stb_image.cpp \
+			   imgui.cpp \
+			   imgui_demo.cpp \
+			   imgui_draw.cpp \
+			   imgui_impl_glfw.cpp \
+			   imgui_impl_opengl3.cpp \
+			   imgui_tables.cpp \
+			   imgui_widgets.cpp \
 
 UTL_FILES	:= iomanip.cpp \
 
 GRP_FILES	:= Texture.cpp \
 			   Mesh.cpp \
+
+GUI_FILES	:= Gui.cpp \
 
 COR_FILES	:= object/EBO.cpp \
 			   object/VAO.cpp \
@@ -59,17 +69,18 @@ COR_FILES	:= object/EBO.cpp \
 			   Camera.cpp \
 			   Shader.cpp \
 			   Window.cpp \
+			   Engine.cpp \
 
-WRL_FILES	:= World.cpp \
-			   terrainGenerator.cpp \
+SCN_FILES	:= Terrain.cpp \
 
 SRC_FILES	:= main.cpp
 
 CXX_SRC		:= $(SRC_FILES) \
 			   $(addprefix $(UTL_DIR)/, $(UTL_FILES)) \
 			   $(addprefix $(GRP_DIR)/, $(GRP_FILES)) \
+			   $(addprefix $(GUI_DIR)/, $(GUI_FILES)) \
 			   $(addprefix $(COR_DIR)/, $(COR_FILES)) \
-			   $(addprefix $(WRL_DIR)/, $(WRL_FILES)) \
+			   $(addprefix $(SCN_DIR)/, $(SCN_FILES)) \
 
 CXX_OBJ		:= $(addprefix $(LIB_DIR)/, $(LIB_FILES:.cpp=.o)) \
 			   $(addprefix $(SRC_DIR)/, $(CXX_SRC:.cpp=.o)) \

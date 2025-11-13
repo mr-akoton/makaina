@@ -1,4 +1,7 @@
 #include <core/Window.hpp>
+#include <imgui/imgui.h>
+#include <imgui/imgui_impl_glfw.h>
+#include <imgui/imgui_impl_opengl3.h>
 
 static void frameBufferSizeCallback(GLFWwindow *window, int width, int height);
 
@@ -6,8 +9,8 @@ static void frameBufferSizeCallback(GLFWwindow *window, int width, int height);
 /*                         CONSTRUCTOR AND DESTRUCTOR                         */
 /* ========================================================================== */
 
-Window::Window(int width, int height):
-	width(width), height(height), id(NULL)
+Window::Window(void):
+	width(0), height(0), id(NULL)
 {
 	/* Do nothing */
 }
@@ -23,8 +26,11 @@ Window::~Window(void)
 
 /* --------------------------------- State ---------------------------------- */
 
-int	Window::init(const char *title)
+int	Window::init(int width, int height, const char *title)
 {
+	this->width = width;
+	this->height = height;
+	
 	id = glfwCreateWindow(width, height, title, NULL, NULL);
 	if (id == NULL)
 	{
@@ -35,7 +41,7 @@ int	Window::init(const char *title)
 	// Should I put them in a separated function (focus()) ?
 	glfwMakeContextCurrent(id);
 	glfwSetFramebufferSizeCallback(id, frameBufferSizeCallback);
-	
+
 	return success;
 }
 

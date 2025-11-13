@@ -15,10 +15,10 @@ class	Window
 
 	
 	public	:
-		Window(int width, int height);
+		Window(void);
 		~Window(void);
 
-		int		init(const char *title);
+		int		init(int width, int height, const char *title);
 		void	close(void);
 		void	update(void);
 		void	destroy(void);

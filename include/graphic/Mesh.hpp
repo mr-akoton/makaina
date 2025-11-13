@@ -22,10 +22,19 @@ class	Mesh
 
 	
 	public	:
+		Mesh(void);
 		Mesh(std::vector<Vertex> &vertices, std::vector<GLuint> &indices,
 			 std::vector<Texture> &textures);
-	
+
+		Mesh	&operator=(const Mesh &instance);
+
+		void	set(std::vector<Vertex> &vertices, std::vector<GLuint> &indices,
+			 		std::vector<Texture> &textures);
 		void	draw(Shader &shader, Camera &camera);
+		void	destroy(void);
+	
+	public	:
+		void	_assignBuffer(void);
 };
 
 #endif // MESH_HPP

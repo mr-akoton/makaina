@@ -9,8 +9,8 @@ uniform mat4	model;
 uniform mat4	camMatrix;
 
 out vec3	currentPos;
-out vec3	color;
 out vec3	normal;
+out vec3	color;
 out vec2	texUV;
 
 
@@ -20,7 +20,7 @@ void main()
 
 	gl_Position = camMatrix * vec4(currentPos, 1.0f);
 
-	color = aColor;
 	normal = aNormal;
+	color = aColor;
 	texUV = aTexUV;
 }

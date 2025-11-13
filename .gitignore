@@ -4,5 +4,6 @@ external/glm
 
 # File to avoid
 *.o
-makaina
 compile_flags.txt
+imgui.ini
+makaina

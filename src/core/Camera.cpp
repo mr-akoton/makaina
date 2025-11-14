@@ -86,7 +86,7 @@ void	Camera::input(Window &window, float deltaTime)
 
 		if (isFirstMouseClick)
 		{
-			window.setCursorPos(width / 2.0, width / 2.0);
+			window.setCursorPos(width / 2.0, height / 2.0);
 			isFirstMouseClick = false;
 		}
 
@@ -108,7 +108,7 @@ void	Camera::input(Window &window, float deltaTime)
 		}
 
 		orientation = glm::rotate(orientation, glm::radians(-roty), up);
-		window.setCursorPos(width / 2.0, width / 2.0);
+		window.setCursorPos(width / 2.0, height / 2.0);
 	}
 	else if (window.isButtonReleased(GLFW_MOUSE_BUTTON_1))
 	{

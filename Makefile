@@ -6,11 +6,11 @@ NAME		:= makaina
 SRC_DIR		:= ./src
 LIB_DIR		:= ./lib
 
-UTL_DIR		:= ./util
+UTL_DIR		:= ./utils
 GRP_DIR		:= ./graphic
-GUI_DIR		:= ./gui
+USI_DIR		:= ./ui
 COR_DIR		:= ./core
-SCN_DIR		:= ./scene
+ENG_DIR		:= ./engine
 
 INC_DIR		:= ./include
 EXT_DIR		:= ./external
@@ -56,12 +56,12 @@ LIB_FILES	:= stb_image.cpp \
 			   imgui_tables.cpp \
 			   imgui_widgets.cpp \
 
-UTL_FILES	:= iomanip.cpp \
+UTL_FILES	:= getFileContent.cpp \
 
 GRP_FILES	:= Texture.cpp \
 			   Mesh.cpp \
 
-GUI_FILES	:= Gui.cpp \
+USI_FILES	:= Interface.cpp \
 
 COR_FILES	:= object/EBO.cpp \
 			   object/VAO.cpp \
@@ -69,18 +69,18 @@ COR_FILES	:= object/EBO.cpp \
 			   Camera.cpp \
 			   Shader.cpp \
 			   Window.cpp \
-			   Engine.cpp \
 
-SCN_FILES	:= Terrain.cpp \
+ENG_FILES	:= Terrain.cpp \
+			   Engine.cpp \
 
 SRC_FILES	:= main.cpp
 
 CXX_SRC		:= $(SRC_FILES) \
 			   $(addprefix $(UTL_DIR)/, $(UTL_FILES)) \
 			   $(addprefix $(GRP_DIR)/, $(GRP_FILES)) \
-			   $(addprefix $(GUI_DIR)/, $(GUI_FILES)) \
+			   $(addprefix $(USI_DIR)/, $(USI_FILES)) \
 			   $(addprefix $(COR_DIR)/, $(COR_FILES)) \
-			   $(addprefix $(SCN_DIR)/, $(SCN_FILES)) \
+			   $(addprefix $(ENG_DIR)/, $(ENG_FILES)) \
 
 CXX_OBJ		:= $(addprefix $(LIB_DIR)/, $(LIB_FILES:.cpp=.o)) \
 			   $(addprefix $(SRC_DIR)/, $(CXX_SRC:.cpp=.o)) \

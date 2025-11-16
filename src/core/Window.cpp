@@ -1,23 +1,25 @@
 #include <core/Window.hpp>
-#include <imgui/imgui.h>
-#include <imgui/imgui_impl_glfw.h>
-#include <imgui/imgui_impl_opengl3.h>
+#include <utils/types.hpp>
 
-static void frameBufferSizeCallback(GLFWwindow *window, int width, int height);
+#include <imgui_impl_glfw.h>
+
+static void frameBufferSizeCallback(GLFWwindow* , int width, int height);
 
 /* ========================================================================== */
 /*                         CONSTRUCTOR AND DESTRUCTOR                         */
 /* ========================================================================== */
 
 Window::Window(void):
-	width(0), height(0), id(NULL)
+	_id(NULL),
+	width(0),
+	height(0)
 {
 	/* Do nothing */
 }
 
 Window::~Window(void)
 {
-	this->destroy();	
+	this->destroy();
 }
 
 /* ========================================================================== */
@@ -26,103 +28,109 @@ Window::~Window(void)
 
 /* --------------------------------- State ---------------------------------- */
 
-int	Window::init(int width, int height, const char *title)
+int	Window::init(unsigned int width, unsigned int height, const char* title)
 {
 	this->width = width;
 	this->height = height;
 	
-	id = glfwCreateWindow(width, height, title, NULL, NULL);
-	if (id == NULL)
+	_id = glfwCreateWindow(width, height, title, NULL, NULL);
+	if (_id == NULL)
 	{
-		logError("glfwCreateWindow: failed to create window");
 		return failure;
 	}
 
-	// Should I put them in a separated function (focus()) ?
-	glfwMakeContextCurrent(id);
-	glfwSetFramebufferSizeCallback(id, frameBufferSizeCallback);
-
+	glfwMakeContextCurrent(_id);
+	glfwSetFramebufferSizeCallback(_id, frameBufferSizeCallback);
+	
 	return success;
 }
 
-void	Window::close(void)
+void	Window::close(void) const
 {
-	if (not glfwWindowShouldClose(id))
+	if (not glfwWindowShouldClose(_id))
 	{
-		glfwSetWindowShouldClose(id, true);
+		glfwSetWindowShouldClose(_id, true);
 	}
 }
 
-void	Window::update(void)
+void	Window::update(void) const
 {
-	glfwSwapBuffers(id);
+	glfwSwapBuffers(_id);
 	glfwPollEvents();
 }
 
 void	Window::destroy(void)
 {
-	if (id != NULL)
+	if (_id != NULL)
 	{
-		glfwDestroyWindow(id);
-		id = NULL;
+		glfwDestroyWindow(_id);
+		_id = NULL;
 	}
 }
+
 
 /* -------------------------------- Checker --------------------------------- */
 
 bool	Window::shouldClose(void) const
 {
-	return glfwWindowShouldClose(id);
+	return glfwWindowShouldClose(_id);
 }
 
 bool	Window::isKeyPressed(int key) const
 {
-	return glfwGetKey(id, key) == GLFW_PRESS;
+	return glfwGetKey(_id, key) == GLFW_PRESS;
 }
 
 bool	Window::isKeyReleased(int key) const
 {
-	return glfwGetKey(id, key) == GLFW_RELEASE;
+	return glfwGetKey(_id, key) == GLFW_RELEASE;
 }
 
 bool	Window::isButtonPressed(int button) const
 {
-	return glfwGetMouseButton(id, button) == GLFW_PRESS;
+	return glfwGetMouseButton(_id, button) == GLFW_PRESS;
 }
 
 bool	Window::isButtonReleased(int button) const
 {
-	return glfwGetMouseButton(id, button) == GLFW_RELEASE;
+	return glfwGetMouseButton(_id, button) == GLFW_RELEASE;
 }
 
 /* --------------------------------- Cursor --------------------------------- */
 
-void	Window::setCursorPos(double x, double y)
+void	Window::setCursorPos(double x, double y) const
 {
-	glfwSetCursorPos(id, x, y);
+	glfwSetCursorPos(_id, x, y);
 }
 
-void	Window::getCursorPos(double &x, double &y)
+void	Window::getCursorPos(double& x, double& y) const
 {
-	glfwGetCursorPos(id, &x, &y);
+	glfwGetCursorPos(_id, &x, &y);
 }
 
-void	Window::hideCursor(void)
+void	Window::hideCursor(void) const
 {
-	glfwSetInputMode(id, GLFW_CURSOR, GLFW_CURSOR_HIDDEN);
+	glfwSetInputMode(_id, GLFW_CURSOR, GLFW_CURSOR_HIDDEN);
 }
 
-void	Window::resetCursor(void)
+void	Window::resetCursor(void) const
 {
-	glfwSetInputMode(id, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+	glfwSetInputMode(_id, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+}
+
+/* ---------------------------------- ImGui --------------------------------- */
+
+void	Window::initImGui(void) const
+{
+	ImGui_ImplGlfw_InitForOpenGL(_id, true);
+
 }
 
 /* ========================================================================== */
 /*                                  UTILITY                                   */
 /* ========================================================================== */
 
-static void frameBufferSizeCallback(GLFWwindow */*window*/, int width,
-									int height)
+static void frameBufferSizeCallback(GLFWwindow* , int width, int height)
 {
 	glViewport(0, 0, width, height);
 }

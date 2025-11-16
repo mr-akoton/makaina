@@ -2,35 +2,36 @@
 # define CAMERA_HPP
 
 # include <glad/glad.h>
-# include <glm/glm.hpp>
 
-# include <core/Shader.hpp>
+# include <utils/types.hpp>
 # include <core/Window.hpp>
-
+# include <core/Shader.hpp>
 
 class	Camera
 {
 	public	:
-		bool	isFirstMouseClick;
-
+		bool	isMouseFirstClick;
 		int		width;
 		int		height;
 		float	ratio;
 		float	speed;
-		float	sensitivity;
+		float	mouseSensitivity;
 
-		glm::vec3	position;
-		glm::vec3	orientation;
-		glm::vec3	up;
-		glm::mat4	camMatrix;
-
+		Vector3	up;
+		Vector3	position;
+		Vector3	orientation;
+		Matrix4	cameraMatrix;
 
 	public	:
-		Camera(int width, int height, glm::vec3 position);
-		
-		void	input(Window &window, float deltaTime);
-		void	updateMatrix(float fov, float nearest, float farest);
-		void	updateShaderMatrix(Shader &shader, const char *uniform);
+		Camera(int width, int height, Vector3 position);
+
+		void	input(Window& window, float deltaTime);
+		void	updateMatrix(float fovDegree, float nearest, float farest);
+		void	updateShaderMatrix(Shader& shader, const char* uniform);
+	
+	private	:
+		void	_handleKeyInput(Window& window, float deltaTime);
+		void	_handleMouseInput(Window& window, float deltaTime);
 };
 
-#endif // CAMERA_HPP
+#endif /* CAMERA_HPP ======================================================== */

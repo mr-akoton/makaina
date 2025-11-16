@@ -1,40 +1,43 @@
 #ifndef MESH_HPP
 # define MESH_HPP
 
-# include <glad/glad.h>
-# include <vector>
-
-# include <core/object/VAO.hpp>
-# include <core/object/VBO.hpp>
-# include <core/object/EBO.hpp>
+# include <core/Object.hpp>
 # include <core/Camera.hpp>
 # include <core/Shader.hpp>
 # include <graphic/Texture.hpp>
+
+typedef std::vector<Texture>	TextureList;
+
 
 class	Mesh
 {
 	public	:
 		VAO	vao;
 
-		std::vector<Vertex>		vertices;
-		std::vector<GLuint>		indices;
-		std::vector<Texture>	textures;
-
+		VertexList	vertices;
+		IndiceList	indices;
+		TextureList	textures;
 	
 	public	:
 		Mesh(void);
-		Mesh(std::vector<Vertex> &vertices, std::vector<GLuint> &indices,
-			 std::vector<Texture> &textures);
+		Mesh(VertexList& vertices, IndiceList& indices, TextureList& textures);
+		~Mesh();
 
-		Mesh	&operator=(const Mesh &instance);
+		Mesh&	operator=(const Mesh& instance);
 
-		void	set(std::vector<Vertex> &vertices, std::vector<GLuint> &indices,
-			 		std::vector<Texture> &textures);
-		void	draw(Shader &shader, Camera &camera);
-		void	destroy(void);
+		void	set(
+			VertexList& vertices,
+			IndiceList& indices,
+			TextureList& textures
+		);
+		void	draw(
+			Shader& shader,
+			Camera& camera,
+			const char* renderType = "element"
+		);
 	
 	public	:
-		void	_assignBuffer(void);
+		void	assignBuffer(void);
 };
 
-#endif // MESH_HPP
+#endif /* MESH_HPP ========================================================== */

@@ -3,24 +3,23 @@
 
 # include <glad/glad.h>
 # include <GLFW/glfw3.h>
-# include <util.hpp>
-
 
 class	Window
 {
-	public	:
-		int			width;
-		int			height;
-		GLFWwindow	*id;
+	private	:
+		GLFWwindow*		_id;
 
-	
+	public	:
+		unsigned int	width;
+		unsigned int	height;
+ 
 	public	:
 		Window(void);
-		~Window(void);
+		~Window();
 
-		int		init(int width, int height, const char *title);
-		void	close(void);
-		void	update(void);
+		int		init(unsigned int width, unsigned int height, const char* title);
+		void	close(void) const;
+		void	update(void) const;
 		void	destroy(void);
 
 		bool	shouldClose(void) const;
@@ -29,10 +28,13 @@ class	Window
 		bool	isButtonPressed(int button) const;
 		bool	isButtonReleased(int button) const;
 
-		void	setCursorPos(double x, double y);
-		void	getCursorPos(double &x, double &y);
-		void	hideCursor(void);
-		void	resetCursor(void);
+		void	setCursorPos(double x, double y) const;
+		void	getCursorPos(double& x, double& y) const;
+		void	hideCursor(void) const;
+		void	resetCursor(void) const;
+
+		void	initImGui(void) const;
 };
 
-#endif // WINDOW_HPP
+
+#endif /* WINDOW_HPP ======================================================== */

@@ -5,13 +5,18 @@
 /*                         CONSTRUCTOR AND DESTRUCTOR                         */
 /* ========================================================================== */
 
-Texture::Texture(const char *file, const char *texType, GLuint slot, GLenum format,
-				 GLenum pixType)
+Texture::Texture(
+	const char*	file,
+	const char*	texType,
+	GLuint		slot,
+	GLenum		format,
+	GLenum		pixType
+)
 {
 	type = texType;
 	unit = slot;
 
-	unsigned char	*bytes;
+	unsigned char*	bytes;
 
 	stbi_set_flip_vertically_on_load(true);
 	bytes = stbi_load(file, &width, &height, &channel, 0);
@@ -33,14 +38,19 @@ Texture::Texture(const char *file, const char *texType, GLuint slot, GLenum form
 	glBindTexture(GL_TEXTURE_2D, 0);
 }
 
+Texture::~Texture()
+{
+	glDeleteTextures(1, &id);
+}
+
 /* ========================================================================== */
 /*                                   METHOD                                   */
 /* ========================================================================== */
 
-void	Texture::texUnit(Shader &shader, const char *uniform, GLuint unit)
+void	Texture::textureUnit(Shader& shader, const char* uniform, GLuint unit)
 {
 	shader.enable();
-	shader.setInt(uniform, unit); // Which unit (Texture::unit or unit) is used ?
+	shader.setInt(uniform, unit);
 }
 
 void	Texture::bind(void)
@@ -52,9 +62,4 @@ void	Texture::bind(void)
 void	Texture::unbind(void)
 {
 	glBindTexture(GL_TEXTURE_2D, 0);
-}
-
-void	Texture::destroy(void)
-{
-	glDeleteTextures(1, &id);
 }

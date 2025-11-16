@@ -10,28 +10,28 @@
 # include <glm/glm.hpp>
 
 # include <core/Window.hpp>
-# include <scene/Terrain.hpp>
-# include <gui/Gui.hpp>
+# include <ui/Interface.hpp>
+# include <utils/types.hpp>
 
 # include <exception>
 
 
 class	Engine
 {
-	// Variable
 	public	:
-		int		windowWidth;
-		int		windowHeight;
-		Window	window;
-		GUI		gui;
-
+		Window		window;
+		Interface	UI;
+		
 		float	deltaTime;
-		float	lastFrame;
+		Vector3	lightPosition;
+		Vector3	lightColor;
 
-
-	// Method
 	public	:
-		Engine(int windowWidth, int windowHeight, const char *windowTitle);
+		Engine(
+			unsigned int	windowWidth,
+			unsigned int	windowHeight,
+			const char*		windowTitle
+		);
 		~Engine();
 
 		void	run(void);
@@ -39,24 +39,22 @@ class	Engine
 	private	:
 		void	_initGlfw(void);
 		void	_initGlad(void);
-		void	_renderGUI(void);
-		void	_updateDeltaTime(void);
 		void	_handleInput(void);
+		void	_updateDeltaTime(void);
+		void	_renderUI(void);
 
-
-	// Exception
 	public	:
 		class	WindowInitFailedException: std::exception
 		{
 			public	:
-				const char	*what(void) const throw();
+				const char*	what(void) const noexcept;
 		};
 
 		class	GladLoadFailedException: std::exception
 		{
 			public	:
-				const char	*what(void) const throw();
+				const char*	what(void) const noexcept;
 		};
 };
 
-#endif // ENGINE_HPP
+#endif /* ENGINE_HPP ======================================================== */

@@ -1,15 +1,24 @@
-#include <core/object/VBO.hpp>
+#include <core/Object.hpp>
 
 /* ========================================================================== */
 /*                         CONSTRUCTOR AND DESTRUCTOR                         */
 /* ========================================================================== */
 
-VBO::VBO(std::vector<Vertex> &vertices)
+VBO::VBO(VertexList& vertices)
 {
 	glGenBuffers(1, &id);
 	glBindBuffer(GL_ARRAY_BUFFER, id);
-	glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(Vertex),
-				 vertices.data(), GL_STATIC_DRAW);
+	glBufferData(
+		GL_ARRAY_BUFFER,
+		vertices.size() * sizeof(Vertex),
+		vertices.data(),
+		GL_STATIC_DRAW
+	);
+}
+
+VBO::~VBO()
+{
+	glDeleteBuffers(1, &id);
 }
 
 /* ========================================================================== */
@@ -24,9 +33,4 @@ void	VBO::bind(void)
 void	VBO::unbind(void)
 {
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
-}
-
-void	VBO::destroy(void)
-{
-	glDeleteBuffers(1, &id);
 }

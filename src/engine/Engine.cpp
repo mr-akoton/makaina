@@ -1,15 +1,21 @@
-#include <core/Engine.hpp>
+#include <engine/Engine.hpp>
+#include <engine/Terrain.hpp>
+#include <core/Shader.hpp>
+
 #include <glm/gtc/type_ptr.hpp>
 
 /* ========================================================================== */
 /*                         CONSTRUCTOR AND DESTRUCTOR                         */
 /* ========================================================================== */
 
-Engine::Engine(int winWidth, int winHeight, const char *windowTitle):
-	windowWidth(winWidth),
-	windowHeight(winHeight),
+Engine::Engine(
+	unsigned int	windowWidth,
+	unsigned int	windowHeight,
+	const char*		windowTitle
+):
 	deltaTime(0.0f),
-	lastFrame(0.0f)
+	lightPosition(1.0f, 1.0f, -1.0f),
+	lightColor(1.0f)
 {
 	_initGlfw();
 	if (window.init(windowWidth, windowHeight, windowTitle) == -1)
@@ -17,8 +23,8 @@ Engine::Engine(int winWidth, int winHeight, const char *windowTitle):
 		glfwTerminate();
 		throw Engine::WindowInitFailedException();
 	}
+	UI.init(window);
 	_initGlad();
-	gui.init(window);
 
 	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_CULL_FACE);
@@ -27,15 +33,10 @@ Engine::Engine(int winWidth, int winHeight, const char *windowTitle):
 
 Engine::~Engine()
 {
-	gui.shutdown();
+	UI.shutdown();
 	window.destroy();
 	glfwTerminate();
 }
-
-
-/* ========================================================================== */
-/*                                   METHOD                                   */
-/* ========================================================================== */
 
 /* ----------------------------- Initialisation ----------------------------- */
 
@@ -59,59 +60,54 @@ void	Engine::_initGlad(void)
 
 /* ---------------------------------- Loop ---------------------------------- */
 
-glm::vec3	lightPos = glm::vec3(50.0f, 50.0f, 0.0f);
-glm::vec3	lightColor = glm::vec3(1.0f, 1.0f, 1.0f);
-
 void	Engine::run(void)
 {
-	Shader	defaultShader("shader/default-vertex.glsl",
-						  "shader/default-fragment.glsl");
+	Shader	terrainShader(
+		"shader/terrain-vertex.glsl",
+		"shader/terrain-fragment.glsl"
+	);
 
-	Terrain		terrain(50, 50, 1.0f, 10.0f);
+	Terrain	terrain(800, 800, 1.0f, 500.0f);
 	terrain.generateTerrain();
-	
-	defaultShader.enable();
-	defaultShader.setMat4("model", terrain.model);
-	defaultShader.setVec3("lightPos", lightPos);
-	defaultShader.setVec3("lightColor", lightColor);
-	
-	Camera	camera(windowWidth, windowHeight, glm::vec3(0.0f, 0.0f, 25.0f));
-	
+
+	terrainShader.enable();
+	terrainShader.setMat4("model", terrain.model);
+	terrainShader.setVec3("lightPosition", lightPosition);
+	terrainShader.setVec3("lightColor", lightColor);
+
+	Camera	camera(
+		window.width,
+		window.height,
+		Vector3(0.0f, 200.0f, 0.0f)
+	);
+
 	while (not window.shouldClose())
 	{
 		_updateDeltaTime();
 		_handleInput();
 
-		glClearColor(0.4f, 0.9f, 1.0f, 1.0f);
+		glClearColor(0.5f, 0.5f, 0.5f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-		if (not gui.wantCaptureMouse())
+		if (not UI.wantCaptureMouse())
 		{
 			camera.input(window, deltaTime);
 		}
 
-		camera.updateMatrix(45.0f, 0.1f, 100.0f);
-		terrain.render(defaultShader, camera);
-		defaultShader.enable();
-		defaultShader.setVec3("lightPos", lightPos);
-		defaultShader.setVec3("lightColor", lightColor);
+		camera.updateMatrix(45.0f, 0.1f, 5000.0f);
+		terrain.render(terrainShader, camera);
 
-		gui.createNewFrame();
-		_renderGUI();
+		terrainShader.enable();
+		terrainShader.setVec3("lightPosition", lightPosition);
+		terrainShader.setVec3("lightColor", lightColor);
 
-		gui.render();
+		UI.createNewFrame();
+		_renderUI();
+
 		window.update();
 	}
 }
 
-
-void	Engine::_renderGUI(void)
-{
-	ImGui::Begin("Settings");
-	ImGui::SliderFloat3("Light Position", glm::value_ptr(lightPos), -1000.0f, 1000.0f, "%.1f");
-	ImGui::ColorPicker3("Light Color", glm::value_ptr(lightColor));
-	ImGui::End();
-}
 
 void	Engine::_handleInput(void)
 {
@@ -123,23 +119,41 @@ void	Engine::_handleInput(void)
 
 void	Engine::_updateDeltaTime(void)
 {
-	float	currentFrame = glfwGetTime();
+	static float	lastFrame = 0.0f;
+	float			currentFrame = glfwGetTime();
 
 	deltaTime = currentFrame - lastFrame;
 	lastFrame = currentFrame;
 }
 
+/* -------------------------------- Interface ------------------------------- */
+
+void	Engine::_renderUI(void)
+{
+	ImGui::Begin("Settings");
+	ImGui::SliderFloat3(
+		"Light Position",
+		glm::value_ptr(lightPosition),
+		-1.0f,
+		1.0f,
+		"%.2f"
+	);
+	ImGui::ColorPicker3("Light Color", glm::value_ptr(lightColor));
+	ImGui::End();
+
+	UI.render();
+}
 
 /* ========================================================================== */
 /*                                  EXCEPTION                                 */
 /* ========================================================================== */
 
-const char	*Engine::WindowInitFailedException::what(void) const throw()
+const char	*Engine::WindowInitFailedException::what(void) const noexcept
 {
 	return "Exception: failed while initiating the window";
 }
 
-const char	*Engine::GladLoadFailedException::what(void) const throw()
+const char	*Engine::GladLoadFailedException::what(void) const noexcept
 {
 	return "Exception: failed while loading GLAD";
 }

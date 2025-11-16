@@ -1,55 +1,66 @@
 #include <graphic/Mesh.hpp>
 
+
 /* ========================================================================== */
 /*                         CONSTRUCTOR AND DESTRUCTOR                         */
 /* ========================================================================== */
 
 Mesh::Mesh(void):
-	vertices(std::vector<Vertex>()),
-	indices(std::vector<GLuint>()),
-	textures(std::vector<Texture>())
+	vertices(VertexList()),
+	indices(IndiceList()),
+	textures(TextureList())
 {
 	/* Do nothing */
 }
 
-Mesh::Mesh(std::vector<Vertex> &vertices, std::vector<GLuint> &indices,
-		   std::vector<Texture> &textures):
-	vertices(vertices), indices(indices), textures(textures)
+Mesh::Mesh(VertexList& vertices, IndiceList& indices, TextureList& textures):
+	vertices(vertices),
+	indices(indices),
+	textures(textures)
 {
-	_assignBuffer();
+	assignBuffer();
+}
+
+Mesh::~Mesh()
+{
+	vertices.clear();
+	indices.clear();
+	textures.clear();
 }
 
 /* ========================================================================== */
 /*                                  OPERATOR                                  */
 /* ========================================================================== */
 
-Mesh	&Mesh::operator=(const Mesh &instance)
+Mesh&	Mesh::operator=(const Mesh& instance)
 {
 	if (this != &instance)
 	{
 		this->vertices = vertices;
 		this->indices = indices;
 		this->textures = textures;
-		_assignBuffer();
+		this->assignBuffer();
 	}
 	return *this;
 }
-
 
 /* ========================================================================== */
 /*                                  METHODES                                  */
 /* ========================================================================== */
 
-void	Mesh::set(std::vector<Vertex> &vertices, std::vector<GLuint> &indices,
-			 		std::vector<Texture> &textures)
+void	Mesh::set(
+	VertexList& vertices,
+	IndiceList& indices,
+	TextureList& textures
+)
 {
 	this->vertices = vertices;
 	this->indices = indices;
 	this->textures = textures;
-	_assignBuffer();
+	this->assignBuffer();
 }
 
-void	Mesh::draw(Shader &shader, Camera &camera)
+void	Mesh::draw(Shader& shader, Camera& camera, const char* renderType)
 {
 	shader.enable();
 	vao.bind();
@@ -71,41 +82,40 @@ void	Mesh::draw(Shader &shader, Camera &camera)
 			num = std::to_string(nspecular++);
 		}
 
-		textures[i].texUnit(shader, (type + num).c_str(), i);
+		textures[i].textureUnit(shader, (type + num).c_str(), i);
 		textures[i].bind();
 	}
 
-	shader.setVec3("camPos", camera.position);
-	camera.updateShaderMatrix(shader, "camMatrix");
+	shader.setVec3("cameraPosition", camera.position);
+	camera.updateShaderMatrix(shader, "cameraMatrix");
 
-	glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, 0);
+	if (std::string(renderType) == "element")
+	{
+		glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, 0);
+	}
+	else if (std::string(renderType) == "buffer")
+	{
+		glDrawArrays(GL_TRIANGLES, 0, vertices.size());
+	}
 }
 
-void	Mesh::destroy(void)
-{
-	vertices.clear();
-	indices.clear();
-	textures.clear();
-	vao.destroy();
-}
-
-
-void	Mesh::_assignBuffer(void)
+void	Mesh::assignBuffer(void)
 {
 	vao.bind();
 
 	VBO	vbo(vertices);
 	EBO	ebo(indices);
 
-	vao.linkAttrib(vbo, 0, 3, GL_FLOAT, sizeof(Vertex), (void *)0);						// Position
-	vao.linkAttrib(vbo, 1, 3, GL_FLOAT, sizeof(Vertex), (void *)(3 * sizeof(float)));	// Normal
-	vao.linkAttrib(vbo, 2, 3, GL_FLOAT, sizeof(Vertex), (void *)(6 * sizeof(float)));	// Color
-	vao.linkAttrib(vbo, 3, 2, GL_FLOAT, sizeof(Vertex), (void *)(9 * sizeof(float)));	// Texture UV
+	vao.linkAttribute(vbo, 0, 3, GL_FLOAT, sizeof(Vertex),
+		(void *)0);
+	vao.linkAttribute(vbo, 1, 3, GL_FLOAT, sizeof(Vertex),
+		(void *)(3 * sizeof(float)));
+	vao.linkAttribute(vbo, 2, 3, GL_FLOAT, sizeof(Vertex),
+		(void *)(6 * sizeof(float)));
+	vao.linkAttribute(vbo, 3, 2, GL_FLOAT, sizeof(Vertex),
+		(void *)(9 * sizeof(float)));
 
 	vao.unbind();
 	vbo.unbind();
 	ebo.unbind();
-
-	vbo.destroy();
-	ebo.destroy();
 }

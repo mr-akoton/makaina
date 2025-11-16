@@ -1,51 +1,51 @@
-#include <gui/Gui.hpp>
+#include <ui/Interface.hpp>
 
 /* ========================================================================== */
-/*                         CONSTRUCTOR AND DESTRUCTOR                         */
+/*                                 CONSTRUCTOR                                */
 /* ========================================================================== */
 
-GUI::GUI(void):
-	window(nullptr), io(NULL)
+Interface::Interface(void):
+	window(NULL),
+	io(NULL)
 {
 	/* Do nothing */
 }
 
-GUI::GUI(Window &window):
-	window(&window), io(NULL)
+Interface::Interface(Window& window):
+	window(&window),
+	io(NULL)
 {
 	IMGUI_CHECKVERSION();
 	ImGui::CreateContext();
 	io = &ImGui::GetIO();
 	ImGui::StyleColorsDark();
-	ImGui_ImplGlfw_InitForOpenGL(window.id, true);
+	window.initImGui();
 	ImGui_ImplOpenGL3_Init("#version 330");
 }
-
 
 /* ========================================================================== */
 /*                                   METHOD                                   */
 /* ========================================================================== */
 
-
 /* ---------------------------------- State --------------------------------- */
 
-void	GUI::init(Window &window)
+void	Interface::init(Window& window)
 {
 	IMGUI_CHECKVERSION();
 	ImGui::CreateContext();
 	io = &ImGui::GetIO();
 	ImGui::StyleColorsDark();
-	ImGui_ImplGlfw_InitForOpenGL(window.id, true);
+	window.initImGui();
 	ImGui_ImplOpenGL3_Init("#version 330");
 }
 
-void	GUI::render(void)
+void	Interface::render(void)
 {
 	ImGui::Render();
 	ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 }
 
-void	GUI::shutdown(void)
+void	Interface::shutdown(void)
 {
 	ImGui_ImplGlfw_Shutdown();
 	ImGui_ImplOpenGL3_Shutdown();
@@ -54,17 +54,16 @@ void	GUI::shutdown(void)
 
 /* --------------------------------- Getter --------------------------------- */
 
-bool	GUI::wantCaptureMouse(void) const
+bool	Interface::wantCaptureMouse(void) const
 {
 	return io->WantCaptureMouse;
 }
-
 
 /* ========================================================================== */
 /*                                 UI CREATION                                */
 /* ========================================================================== */
 
-void	GUI::createNewFrame(void)
+void	Interface::createNewFrame(void)
 {
 	ImGui_ImplGlfw_NewFrame();
 	ImGui_ImplOpenGL3_NewFrame();

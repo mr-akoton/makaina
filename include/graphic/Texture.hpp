@@ -2,6 +2,7 @@
 # define TEXTURE_HPP
 
 # include <glad/glad.h>
+# include <noise/FastNoiseLite.h>
 
 # include <core/Shader.hpp>
 
@@ -24,6 +25,14 @@ class	Texture
 			GLuint		slot,
 			GLenum		format,
 			GLenum		pixType
+		);
+		Texture(
+			FastNoiseLite const& noise,
+			int		width,
+			int		height,
+			GLuint	slot,
+			GLenum	format,
+			GLenum	pixType
 		);
 		~Texture();
 		

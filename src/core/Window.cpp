@@ -41,7 +41,12 @@ int	Window::init(unsigned int width, unsigned int height, const char* title)
 
 	glfwMakeContextCurrent(_id);
 	glfwSetFramebufferSizeCallback(_id, frameBufferSizeCallback);
-	
+
+	if (glfwRawMouseMotionSupported())
+	{
+		glfwSetInputMode(_id, GLFW_RAW_MOUSE_MOTION, GLFW_TRUE);
+	}
+
 	return success;
 }
 
@@ -110,7 +115,7 @@ void	Window::getCursorPos(double& x, double& y) const
 
 void	Window::hideCursor(void) const
 {
-	glfwSetInputMode(_id, GLFW_CURSOR, GLFW_CURSOR_HIDDEN);
+	glfwSetInputMode(_id, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 }
 
 void	Window::resetCursor(void) const

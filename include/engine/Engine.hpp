@@ -10,6 +10,7 @@
 # include <glm/glm.hpp>
 
 # include <core/Window.hpp>
+# include <engine/Terrain.hpp>
 # include <ui/Interface.hpp>
 # include <utils/types.hpp>
 

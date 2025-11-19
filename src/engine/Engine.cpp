@@ -1,3 +1,4 @@
+#include "imgui.h"
 #include <engine/Engine.hpp>
 #include <engine/Terrain.hpp>
 #include <core/Shader.hpp>
@@ -67,8 +68,12 @@ void	Engine::run(void)
 		"shader/terrain-fragment.glsl"
 	);
 
-	Terrain	terrain(800, 800, 1.0f, 500.0f);
+	int	terrainSize = 800;
+
+	Terrain	terrain(terrainSize, terrainSize, 1.0f, 500.0f);
 	terrain.generateTerrain();
+	
+	Texture	heightMap(terrain.noise, terrainSize, terrainSize, 0, GL_RED, GL_FLOAT);
 
 	terrainShader.enable();
 	terrainShader.setMat4("model", terrain.model);
@@ -86,7 +91,7 @@ void	Engine::run(void)
 		_updateDeltaTime();
 		_handleInput();
 
-		glClearColor(0.5f, 0.5f, 0.5f, 1.0f);
+		glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		if (not UI.wantCaptureMouse())
@@ -96,10 +101,13 @@ void	Engine::run(void)
 
 		camera.updateMatrix(45.0f, 0.1f, 5000.0f);
 		terrain.render(terrainShader, camera);
-
+		
 		terrainShader.enable();
 		terrainShader.setVec3("lightPosition", lightPosition);
 		terrainShader.setVec3("lightColor", lightColor);
+		heightMap.textureUnit(terrainShader, "heightMap", 0);
+		
+		heightMap.bind();
 
 		UI.createNewFrame();
 		_renderUI();

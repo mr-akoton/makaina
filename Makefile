@@ -56,7 +56,8 @@ LIB_FILES	:= stb_image.cpp \
 			   imgui_tables.cpp \
 			   imgui_widgets.cpp \
 
-UTL_FILES	:= getFileContent.cpp \
+UTL_FILES	:= converter.cpp \
+			   iomanip.cpp \
 
 GRP_FILES	:= Texture.cpp \
 			   Mesh.cpp \

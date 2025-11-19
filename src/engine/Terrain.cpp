@@ -1,4 +1,6 @@
 #include <engine/Terrain.hpp>
+#include <utils/utils.hpp>
+
 #include <glm/gtc/matrix_transform.hpp>
 
 /* ========================================================================== */
@@ -10,6 +12,9 @@ Terrain::Terrain(int width, int height, float gridSize, float amplitude):
 	height(height),
 	gridSize(gridSize),
 	amplitude(amplitude),
+	color0(hexToRGB("#0f6a2e")),
+	color1(hexToRGB("#0f6a2e")),
+	color2(hexToRGB("#0f6a2e")),
 	position(Vector3(0.0f)),
 	model(Matrix4(1.0f))
 {
@@ -30,9 +35,6 @@ void	Terrain::setPosition(Vector3 position)
 
 /* --------------------------- Terrain Generation --------------------------- */
 
-const Vector3	COLOR_RED(0.278, 0.239, 0.122);
-const Vector3	COLOR_GREEN(1.0f);
-
 Vector3	interpolateColor(
 	const Vector3& color1,
 	const Vector3& color2,
@@ -46,24 +48,28 @@ Vector3	interpolateColor(
     return interpolated;
 }
 
-Vector3 getColorBySlope(Vector3 normal)
-{
-	float	slope = 1.0f - normal.y;
-
-	if (slope < 0.3f)
-	{
-		return interpolateColor(COLOR_RED, COLOR_GREEN, 1.0f - slope / 0.3f);
-	}
-	else
-	{
-		return COLOR_RED;
-	}
-}
-
 Vector3	getTriangleNormal(Vector3 a, Vector3 b, Vector3 c)
 {
 	return glm::normalize(glm::cross(b - a, c - a));
 }
+
+
+Vector3 Terrain::getColorBySlope(Vector3 normal)
+{
+	const float	slopeMax = 0.4f;	
+	float		slope = 1.0f - normal.y;
+
+	if (slope < slopeMax)
+	{
+		return interpolateColor(color2, color0, 1.0f - (slope / slopeMax));
+	}
+	else
+	{
+		return color2;
+	}
+}
+
+#include <iostream>
 
 void	Terrain::generateTerrain(void)
 {
@@ -84,12 +90,12 @@ void	Terrain::generateTerrain(void)
 				{
 					Vector3(
 						px * gridSize,
-						noise.GetNoise((float)px, (float)pz) * amplitude,
+						0.0f,
 						pz * gridSize
 					),
 					Vector3(0.0f),
 					Vector3(1.0f),
-					Vector2(0.0f)
+					Vector2((float)px /( width - 1), (float)pz / (height - 1))
 				};
 			};
 

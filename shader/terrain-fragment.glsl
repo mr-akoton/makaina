@@ -17,7 +17,7 @@ out vec4	FragColor;
 vec4	directionLight()
 {
 	float	ambienLight = 0.2f;
-	
+
 	vec3	norm = normalize(normal);
 	vec3	lightDirection = normalize(lightPosition);
 	float	diffuse = max(dot(norm, lightDirection), 0.0f);

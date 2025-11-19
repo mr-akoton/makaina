@@ -17,7 +17,7 @@ Camera::Camera(int width, int height, Vector3 position):
 	height(height),
 	ratio((float)width / height),
 	speed(20.0f),
-	mouseSensitivity(2.0f),
+	mouseSensitivity(20.0f),
 	up(0.0f, 1.0f, 0.0f),
 	position(position),
 	orientation(0.0f, 0.0f, 1.0f),

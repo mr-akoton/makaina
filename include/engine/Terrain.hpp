@@ -16,6 +16,10 @@ class	Terrain
 		float	gridSize;
 		float	amplitude;
 
+		Vector3	color0;
+		Vector3	color1;
+		Vector3	color2;
+
 		Mesh			mesh;
 		FastNoiseLite	noise;
 
@@ -27,6 +31,7 @@ class	Terrain
 
 		void	setPosition(Vector3 position);
 		void	generateTerrain(void);
+		Vector3	getColorBySlope(Vector3 normal);
 
 		void	render(Shader& shader, Camera& camera);
 };

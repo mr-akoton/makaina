@@ -24,6 +24,7 @@ class	Engine
 		Interface	UI;
 		
 		float	deltaTime;
+		float	terrainHeight;
 		Vector3	lightPosition;
 		Vector3	lightColor;
 

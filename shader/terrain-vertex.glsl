@@ -7,6 +7,8 @@ layout (location = 3) in vec2	aTextureUV;
 
 uniform mat4		model;
 uniform mat4		cameraMatrix;
+uniform vec2		terrainSize;
+uniform float		heightFactor;
 uniform sampler2D	heightMap;
 
 out vec3	currentPosition;
@@ -15,19 +17,22 @@ out vec3	color;
 out vec2	textureUV;
 
 
-vec3	getNormal(vec2 uv, float heightScale)
+vec3	getNormal()
 {
-	vec3	textureSize = 1.0 / textureSize(heightMap, 0);
+	vec2	textureSize = 1.0 / textureSize(heightMap, 0);
 
-	float	heightL = texture(heightMap, uv + vec2(-textureSize.x, 0.0)).r;
-	float	heightR = texture(heightMap, uv + vec2(textureSize.x, 0.0)).r;
-	float	heightD = texture(heightMap, uv + vec2(0.0, -textureSize.y)).r;
-	float	heightU = texture(heightMap, uv + vec2(0.0, textureSize.y)).r;
+	float	heightL = texture(heightMap, aTextureUV + vec2(-textureSize.x,0.0)).r;
+	float	heightR = texture(heightMap, aTextureUV + vec2(textureSize.x,0.0)).r;
+	float	heightD = texture(heightMap, aTextureUV + vec2(0.0,-textureSize.y)).r;
+	float	heightU = texture(heightMap, aTextureUV + vec2(0.0,textureSize.y)).r;
 
 	float	stepX = terrainSize.x * textureSize.x;
-	float	stepY = terrainSize.y * textureSize.y;
+	float	stepZ = terrainSize.y * textureSize.y;
 
-	vec3	tangentX = vec3(stepX * 2.0);
+	vec3	tangentX = vec3(stepX * 2.0, (heightR - heightL) * heightFactor, 0.0);
+	vec3	tangentZ = vec3(0.0, (heightU - heightD) * heightFactor, stepZ * 2.0);
+
+	return normalize(cross(tangentZ, tangentX));
 }
 
 void main()
@@ -35,11 +40,11 @@ void main()
 	float	height = texture(heightMap, aTextureUV).r;
 
 	currentPosition = vec3(model * vec4(aPosition, 1.0f));
-	currentPosition.y += height * 500.0f;
+	currentPosition.y += height * heightFactor;
 
 	gl_Position = cameraMatrix * vec4(currentPosition, 1.0f);
 
-	normal = aNormal;
+	normal = getNormal();
 	color = aColor;
 	textureUV = aTextureUV;
 }

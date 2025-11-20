@@ -15,6 +15,7 @@ Engine::Engine(
 	const char*		windowTitle
 ):
 	deltaTime(0.0f),
+	terrainHeight(0.0f),
 	lightPosition(1.0f, 1.0f, -1.0f),
 	lightColor(1.0f)
 {
@@ -76,6 +77,7 @@ void	Engine::run(void)
 	Texture	heightMap(terrain.noise, terrainSize, terrainSize, 0, GL_RED, GL_FLOAT);
 
 	terrainShader.enable();
+	terrainShader.setVec2("terrainSize", Vector2(terrain.width, terrain.height));
 	terrainShader.setMat4("model", terrain.model);
 	terrainShader.setVec3("lightPosition", lightPosition);
 	terrainShader.setVec3("lightColor", lightColor);
@@ -105,6 +107,7 @@ void	Engine::run(void)
 		terrainShader.enable();
 		terrainShader.setVec3("lightPosition", lightPosition);
 		terrainShader.setVec3("lightColor", lightColor);
+		terrainShader.setFloat("heightFactor", terrainHeight);
 		heightMap.textureUnit(terrainShader, "heightMap", 0);
 		
 		heightMap.bind();
@@ -139,6 +142,7 @@ void	Engine::_updateDeltaTime(void)
 void	Engine::_renderUI(void)
 {
 	ImGui::Begin("Settings");
+	ImGui::SliderFloat("Height", &terrainHeight, 0.0f, 1000.0f, "%.1f");
 	ImGui::SliderFloat3(
 		"Light Position",
 		glm::value_ptr(lightPosition),

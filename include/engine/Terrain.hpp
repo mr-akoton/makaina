@@ -14,24 +14,29 @@ class	Terrain
 		int		width;
 		int		height;
 		float	gridSize;
-		float	amplitude;
-
-		Vector3	color0;
-		Vector3	color1;
-		Vector3	color2;
 
 		Mesh			mesh;
 		FastNoiseLite	noise;
 
+		Vector2	noiseTextureSize;
 		Vector3	position;
 		Matrix4	model;
 
 	public	:
-		Terrain(int width, int height, float gridSize, float amplitude);
+		Terrain(
+			int		width,
+			int		height,
+			float	gridSize,
+			Vector2 noiseTextureSize
+		);
 
 		void	setPosition(Vector3 position);
-		void	generateTerrain(void);
-		Vector3	getColorBySlope(Vector3 normal);
+		void	generateMesh(void);
+
+		void	setNoiseType(FastNoiseLite::NoiseType type);
+		void	setNoiseFrequency(float frequency);
+		void	setNoiseFractalType(FastNoiseLite::FractalType type);
+		void	setNoiseFractalAttributes(int octaves, float lacunarity, float gain);
 
 		void	render(Shader& shader, Camera& camera);
 };

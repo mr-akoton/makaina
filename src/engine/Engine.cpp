@@ -15,7 +15,7 @@ Engine::Engine(
 	const char*		windowTitle
 ):
 	deltaTime(0.0f),
-	terrainHeight(0.0f),
+	terrainHeight(500.0f),
 	lightPosition(1.0f, 1.0f, -1.0f),
 	lightColor(1.0f)
 {
@@ -66,27 +66,28 @@ void	Engine::run(void)
 {
 	Shader	terrainShader(
 		"shader/terrain-vertex.glsl",
-		"shader/terrain-fragment.glsl"
+		"shader/terrain-fragment.glsl",
+		"shader/terrain-geometry.glsl"
 	);
 
 	int	terrainSize = 800;
+	int	noiseSize = terrainSize + 1;
 
-	Terrain	terrain(terrainSize, terrainSize, 1.0f, 500.0f);
-	terrain.generateTerrain();
-	
-	Texture	heightMap(terrain.noise, terrainSize, terrainSize, 0, GL_RED, GL_FLOAT);
+	Terrain	terrain(terrainSize, terrainSize, 1.0f, Vector2(noiseSize));
+	terrain.setNoiseType(FastNoiseLite::NoiseType_Perlin);
+	terrain.setNoiseFrequency(0.003f);
+	terrain.setNoiseFractalType(FastNoiseLite::FractalType_FBm);
+	terrain.setNoiseFractalAttributes(8, 2.0f, 0.4f);
+
+	Texture	heightMap(terrain.noise, noiseSize, noiseSize, 0, GL_RED, GL_FLOAT);
+
+	Camera	camera(window.width, window.height, Vector3(0.0f, 200.0f, 0.0f));
 
 	terrainShader.enable();
-	terrainShader.setVec2("terrainSize", Vector2(terrain.width, terrain.height));
 	terrainShader.setMat4("model", terrain.model);
 	terrainShader.setVec3("lightPosition", lightPosition);
 	terrainShader.setVec3("lightColor", lightColor);
 
-	Camera	camera(
-		window.width,
-		window.height,
-		Vector3(0.0f, 200.0f, 0.0f)
-	);
 
 	while (not window.shouldClose())
 	{
@@ -101,6 +102,8 @@ void	Engine::run(void)
 			camera.input(window, deltaTime);
 		}
 
+		heightMap.bind();
+
 		camera.updateMatrix(45.0f, 0.1f, 5000.0f);
 		terrain.render(terrainShader, camera);
 		
@@ -110,7 +113,6 @@ void	Engine::run(void)
 		terrainShader.setFloat("heightFactor", terrainHeight);
 		heightMap.textureUnit(terrainShader, "heightMap", 0);
 		
-		heightMap.bind();
 
 		UI.createNewFrame();
 		_renderUI();

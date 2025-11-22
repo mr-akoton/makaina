@@ -7,15 +7,19 @@
 /*                         CONSTRUCTOR AND DESTRUCTOR                         */
 /* ========================================================================== */
 
-Shader::Shader(const char* vertexFile, const char* fragmentFile)
+Shader::Shader(
+	const char* vertexFile,
+	const char* fragmentFile,
+	const char* geometryFile
+)
 {
 	std::string	vertexFileContent = getFileContent(vertexFile);
 	std::string	fragmentFileContent = getFileContent(fragmentFile);
 	
-	const char	*vertexSource = vertexFileContent.c_str();
-	const char	*fragmentSource = fragmentFileContent.c_str();
+	const char*	vertexSource = vertexFileContent.c_str();
+	const char*	fragmentSource = fragmentFileContent.c_str();
 
-	GLuint	vertexShader, fragmentShader;
+	GLuint	vertexShader, fragmentShader, geometryShader;
 
 	vertexShader = glCreateShader(GL_VERTEX_SHADER);
 	glShaderSource(vertexShader, 1, &vertexSource, NULL);
@@ -27,9 +31,24 @@ Shader::Shader(const char* vertexFile, const char* fragmentFile)
 	glCompileShader(fragmentShader);
 	_debugShaderCompilation(fragmentShader);
 
+	if (geometryFile != NULL)
+	{
+		std::string	geometryFileContent = getFileContent(geometryFile);
+		const char*	geometrySource = geometryFileContent.c_str();
+
+		geometryShader = glCreateShader(GL_GEOMETRY_SHADER);
+		glShaderSource(geometryShader, 1, &geometrySource, NULL);
+		glCompileShader(geometryShader);
+		_debugShaderCompilation(geometryShader);
+	}
+
 	id = glCreateProgram();
 	glAttachShader(id, vertexShader);
 	glAttachShader(id, fragmentShader);
+	if (geometryFile != NULL)
+	{
+		glAttachShader(id, geometryShader);
+	}
 	glLinkProgram(id);
 	_debugProgramLink(id);
 

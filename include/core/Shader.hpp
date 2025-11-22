@@ -16,7 +16,11 @@ class	Shader
 		GLuint	id;
 	
 	public	:
-		Shader(const char* vertexFile, const char* fragmentFile);
+		Shader(
+			const char* vertexFile,
+			const char* fragmentFile,
+			const char* geometryFile = NULL
+		);
 		~Shader();
 
 		void	enable(void);

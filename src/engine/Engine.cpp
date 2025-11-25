@@ -15,7 +15,7 @@ Engine::Engine(
 	const char*		windowTitle
 ):
 	deltaTime(0.0f),
-	terrainHeight(500.0f),
+	terrainHeight(0.0f),
 	lightPosition(1.0f, 1.0f, -1.0f),
 	lightColor(1.0f)
 {
@@ -111,11 +111,13 @@ void	Engine::run(void)
 		terrainShader.setVec3("lightPosition", lightPosition);
 		terrainShader.setVec3("lightColor", lightColor);
 		terrainShader.setFloat("heightFactor", terrainHeight);
+		terrainShader.setVec3("color0", terrain.color0);
+		terrainShader.setVec3("color1", terrain.color1);
+		terrainShader.setVec3("color2", terrain.color2);
 		heightMap.textureUnit(terrainShader, "heightMap", 0);
 		
 
-		UI.createNewFrame();
-		_renderUI();
+		_renderUI(terrain);
 
 		window.update();
 	}
@@ -141,8 +143,10 @@ void	Engine::_updateDeltaTime(void)
 
 /* -------------------------------- Interface ------------------------------- */
 
-void	Engine::_renderUI(void)
+void	Engine::_renderUI(Terrain& terrain)
 {
+	UI.createNewFrame();
+
 	ImGui::Begin("Settings");
 	ImGui::SliderFloat("Height", &terrainHeight, 0.0f, 1000.0f, "%.1f");
 	ImGui::SliderFloat3(
@@ -153,6 +157,9 @@ void	Engine::_renderUI(void)
 		"%.2f"
 	);
 	ImGui::ColorPicker3("Light Color", glm::value_ptr(lightColor));
+	ImGui::ColorPicker3("Color 0", glm::value_ptr(terrain.color0));
+	ImGui::ColorPicker3("Color 1", glm::value_ptr(terrain.color1));
+	ImGui::ColorPicker3("Color 2", glm::value_ptr(terrain.color2));
 	ImGui::End();
 
 	UI.render();

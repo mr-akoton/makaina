@@ -15,21 +15,6 @@ in vec2		textureUV;
 out vec4	FragColor;
 
 
-vec3	getColorBySlope()
-{
-	// 0 is flat, 1 is vertical
-	float	slope = 1.0f - normal.y;
-
-	if (slope < 0.2f && height > 10)
-	{
-		return vec3(1.0f, 0.0f, 0.0f);
-	}
-	else
-	{
-		return vec3(1.0f, 1.0f, 1.0f);
-	}
-}
-
 vec4	directionLight()
 {
 	float	ambienLight = 0.2f;
@@ -38,7 +23,7 @@ vec4	directionLight()
 	vec3	lightDirection = normalize(lightPosition);
 	float	diffuse = max(dot(norm, lightDirection), 0.0f);
 
-	return vec4(getColorBySlope() * lightColor, 1.0f) * (diffuse + ambienLight);
+	return vec4(color * lightColor, 1.0f) * (diffuse + ambienLight);
 }
 
 void main()

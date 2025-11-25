@@ -18,7 +18,11 @@ Terrain::Terrain(
 	gridSize(gridSize),
 	noiseTextureSize(noiseTextureSize),
 	position(Vector3(0.0f)),
-	model(Matrix4(1.0f))
+	model(Matrix4(1.0f)),
+	color0(1.0f, 0.0f, 0.0f),
+	color1(0.0f, 1.0f, 0.0f),
+	color2(0.0f, 0.0f, 1.0f)
+
 {
 	model = glm::translate(model, position);
 	generateMesh();

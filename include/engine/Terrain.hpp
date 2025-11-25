@@ -22,6 +22,10 @@ class	Terrain
 		Vector3	position;
 		Matrix4	model;
 
+		Vector3	color0; 
+		Vector3	color1;
+		Vector3	color2;
+
 	public	:
 		Terrain(
 			int		width,

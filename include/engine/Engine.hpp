@@ -43,7 +43,7 @@ class	Engine
 		void	_initGlad(void);
 		void	_handleInput(void);
 		void	_updateDeltaTime(void);
-		void	_renderUI(void);
+		void	_renderUI(Terrain& terrain);
 
 	public	:
 		class	WindowInitFailedException: std::exception

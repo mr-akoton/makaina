@@ -61,6 +61,14 @@ Texture::Texture(
 		}
 	}
 
+	float	minNoiseValue = *std::min_element<std::vector<float>::iterator>(noiseData.begin(), noiseData.end());
+	float	maxNoiseValue = *std::max_element<std::vector<float>::iterator>(noiseData.begin(), noiseData.end());
+
+	for (float& noiseValue: noiseData)
+	{
+		noiseValue = (noiseValue - minNoiseValue) / (maxNoiseValue - minNoiseValue);
+	}
+
 	glGenTextures(1, &id);
 	glActiveTexture(GL_TEXTURE0 + unit);
 	glBindTexture(GL_TEXTURE_2D, id);

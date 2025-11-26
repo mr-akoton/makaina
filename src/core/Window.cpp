@@ -113,6 +113,11 @@ void	Window::getCursorPos(double& x, double& y) const
 	glfwGetCursorPos(_id, &x, &y);
 }
 
+void	Window::setWindowTitle(const std::string& title) const
+{
+	glfwSetWindowTitle(_id, title.c_str());
+}
+
 void	Window::hideCursor(void) const
 {
 	glfwSetInputMode(_id, GLFW_CURSOR, GLFW_CURSOR_DISABLED);

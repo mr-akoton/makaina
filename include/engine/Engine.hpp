@@ -28,6 +28,11 @@ class	Engine
 		Vector3	lightPosition;
 		Vector3	lightColor;
 
+		double			previousTime;
+		double			currentTime;
+		double			timeDifference;
+		unsigned int	counter;
+
 	public	:
 		Engine(
 			unsigned int	windowWidth,
@@ -42,6 +47,7 @@ class	Engine
 		void	_initGlfw(void);
 		void	_initGlad(void);
 		void	_handleInput(void);
+		void	_displayFPS(void);
 		void	_updateDeltaTime(void);
 		void	_renderUI(Terrain& terrain);
 

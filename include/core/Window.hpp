@@ -4,6 +4,9 @@
 # include <glad/glad.h>
 # include <GLFW/glfw3.h>
 
+# include <string>
+
+
 class	Window
 {
 	private	:
@@ -30,6 +33,7 @@ class	Window
 
 		void	setCursorPos(double x, double y) const;
 		void	getCursorPos(double& x, double& y) const;
+		void	setWindowTitle(const std::string& title) const;
 		void	hideCursor(void) const;
 		void	resetCursor(void) const;
 

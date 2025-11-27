@@ -34,6 +34,7 @@ Engine::Engine(
 
 	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_CULL_FACE);
+	glCullFace(GL_BACK);
 	glFrontFace(GL_CCW);
 }
 
@@ -101,16 +102,20 @@ void	Engine::run(void)
 	terrainShader.setFloat("cameraNear", 0.1f);
 	terrainShader.setFloat("cameraFar", 1000.f);
 
+
+	framebufferShader.enable();
+	framebufferShader.setInt("screenTexture", 0);
+
 	float rectangleVertices[] =
 	{
 		// Coords    // texCoords
 		1.0f, -1.0f,  1.0f, 0.0f,
-		-1.0f, -1.0f,  0.0f, 0.0f,
 		-1.0f,  1.0f,  0.0f, 1.0f,
+		-1.0f, -1.0f,  0.0f, 0.0f,
 
 		1.0f,  1.0f,  1.0f, 1.0f,
+		-1.0f,  1.0f,  0.0f, 1.0f,
 		1.0f, -1.0f,  1.0f, 0.0f,
-		-1.0f,  1.0f,  0.0f, 1.0f
 	};
 
 	GLuint	rectVAO;
@@ -167,8 +172,6 @@ void	Engine::run(void)
 
 		heightMap.bind();
 
-		camera.updateMatrix(45.0f, 0.1f, 1000.0f);
-		terrain.render(terrainShader, camera);
 		
 		terrainShader.enable();
 		terrainShader.setVec3("lightPosition", lightPosition);
@@ -179,10 +182,14 @@ void	Engine::run(void)
 		terrainShader.setVec3("color2", terrain.color2);
 		heightMap.textureUnit(terrainShader, "heightMap", 0);
 		
+		camera.updateMatrix(45.0f, 0.1f, 1000.0f);
+		terrain.render(terrainShader, camera);
+		
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 		framebufferShader.enable();
 		glBindVertexArray(rectVAO);
 		glDisable(GL_DEPTH_TEST);
+		glActiveTexture(GL_TEXTURE0);
 		glBindTexture(GL_TEXTURE_2D, framebufferTexture);
 		glDrawArrays(GL_TRIANGLES, 0, 6);
 

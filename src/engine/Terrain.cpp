@@ -22,7 +22,6 @@ Terrain::Terrain(
 	color0(1.0f),
 	color1(1.0f),
 	color2(1.0f)
-
 {
 	model = glm::translate(model, position);
 	generateMesh();
@@ -87,13 +86,13 @@ void	Terrain::generateMesh(void)
 			{
 				int	i = (z * width) + x;
 
+				mesh.indices.push_back(i);
 				mesh.indices.push_back(i + width);
 				mesh.indices.push_back(i + 1);
-				mesh.indices.push_back(i);
 
+				mesh.indices.push_back(i + 1);
 				mesh.indices.push_back(i + width);
 				mesh.indices.push_back(i + width + 1);
-				mesh.indices.push_back(i + 1);
 			}
 		}
 	}

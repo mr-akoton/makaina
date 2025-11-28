@@ -1,5 +1,6 @@
 #include "imgui.h"
 #include <engine/Engine.hpp>
+#include <engine/Water.hpp>
 #include <engine/Terrain.hpp>
 #include <core/Shader.hpp>
 
@@ -76,10 +77,10 @@ void	Engine::run(void)
 		"shader/terrain-fragment.glsl",
 		"shader/terrain-geometry.glsl"
 	);
-
-	Shader	framebufferShader(
-		"shader/framebuffer-vertex.glsl",
-		"shader/framebuffer-fragment.glsl"
+	Shader	waterShader(
+		"shader/water-vertex.glsl",
+		"shader/water-fragment.glsl",
+		"shader/water-geometry.glsl"
 	);
 
 	int	terrainSize = 800;
@@ -90,6 +91,8 @@ void	Engine::run(void)
 	terrain.setNoiseFrequency(0.003f);
 	terrain.setNoiseFractalType(FastNoiseLite::FractalType_FBm);
 	terrain.setNoiseFractalAttributes(8, 2.0f, 0.4f);
+
+	Water	water(terrainSize / 2.0, terrainSize / 2.0, 2.0f, Vector3(0.0f, 0.0f, 1.0f));
 
 	Texture	heightMap(terrain.noise, noiseSize, noiseSize, 0, GL_RED, GL_FLOAT);
 
@@ -102,57 +105,12 @@ void	Engine::run(void)
 	terrainShader.setFloat("cameraNear", 0.1f);
 	terrainShader.setFloat("cameraFar", 1000.f);
 
-
-	framebufferShader.enable();
-	framebufferShader.setInt("screenTexture", 0);
-
-	float rectangleVertices[] =
-	{
-		// Coords    // texCoords
-		1.0f, -1.0f,  1.0f, 0.0f,
-		-1.0f,  1.0f,  0.0f, 1.0f,
-		-1.0f, -1.0f,  0.0f, 0.0f,
-
-		1.0f,  1.0f,  1.0f, 1.0f,
-		-1.0f,  1.0f,  0.0f, 1.0f,
-		1.0f, -1.0f,  1.0f, 0.0f,
-	};
-
-	GLuint	rectVAO;
-	GLuint	rectVBO;
-	glGenVertexArrays(1, &rectVAO);
-	glGenBuffers(1, &rectVBO);
-	glBindVertexArray(rectVAO);
-	glBindBuffer(GL_ARRAY_BUFFER, rectVBO);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(rectangleVertices), &rectangleVertices, GL_STATIC_DRAW);
-	glEnableVertexAttribArray(0);
-	glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)0);
-	glEnableVertexAttribArray(1);
-	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)(2 * sizeof(float)));
-
-	GLuint FBO;
-	glGenFramebuffers(1, &FBO);
-	glBindFramebuffer(GL_FRAMEBUFFER, FBO);
-
-	GLuint framebufferTexture;
-	glGenTextures(1, &framebufferTexture);
-	glBindTexture(GL_TEXTURE_2D, framebufferTexture);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, window.width, window.height, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, framebufferTexture, 0);
-
-	GLuint RBO;
-	glGenRenderbuffers(1, &RBO);
-	glBindRenderbuffer(GL_RENDERBUFFER, RBO);
-	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, window.width, window.height);
-	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, RBO);
-
-	auto fboStatus = glCheckFramebufferStatus(GL_FRAMEBUFFER);
-	if (fboStatus != GL_FRAMEBUFFER_COMPLETE)
-		std::cerr << "Framebuffer error: " << fboStatus << std::endl;
+	waterShader.enable();
+	waterShader.setMat4("model", water.model);
+	waterShader.setVec3("lightPosition", lightPosition);
+	waterShader.setVec3("lightColor", lightColor);
+	waterShader.setFloat("cameraNear", 0.1f);
+	waterShader.setFloat("cameraFar", 1000.f);
 
 	while (not window.shouldClose())
 	{
@@ -160,7 +118,6 @@ void	Engine::run(void)
 		_updateDeltaTime();
 		_handleInput();
 		
-		glBindFramebuffer(GL_FRAMEBUFFER, FBO);
 		glClearColor(0.85f, 0.85f, 0.90f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		glEnable(GL_DEPTH_TEST);
@@ -170,8 +127,8 @@ void	Engine::run(void)
 			camera.input(window, deltaTime);
 		}
 
+		camera.updateMatrix(45.0f, 0.1f, 1000.0f);
 		heightMap.bind();
-
 		
 		terrainShader.enable();
 		terrainShader.setVec3("lightPosition", lightPosition);
@@ -182,18 +139,21 @@ void	Engine::run(void)
 		terrainShader.setVec3("color2", terrain.color2);
 		heightMap.textureUnit(terrainShader, "heightMap", 0);
 		
-		camera.updateMatrix(45.0f, 0.1f, 1000.0f);
 		terrain.render(terrainShader, camera);
+		camera.updateShaderMatrix(terrainShader, "cameraMatrix");
 		
-		glBindFramebuffer(GL_FRAMEBUFFER, 0);
-		framebufferShader.enable();
-		glBindVertexArray(rectVAO);
-		glDisable(GL_DEPTH_TEST);
-		glActiveTexture(GL_TEXTURE0);
-		glBindTexture(GL_TEXTURE_2D, framebufferTexture);
-		glDrawArrays(GL_TRIANGLES, 0, 6);
-
-		_renderUI(terrain);
+		waterShader.enable();
+		waterShader.setFloat("glTime", glfwGetTime());
+		waterShader.setVec3("lightPosition", lightPosition);
+		waterShader.setVec3("lightColor", lightColor);
+		waterShader.setVec3("color", water.color);
+		waterShader.setFloat("level", water.position.y);
+		
+		camera.updateShaderMatrix(waterShader, "cameraMatrix");
+		water.render(waterShader, camera);
+		
+		
+		_renderUI(terrain, water);
 
 		window.update();
 	}
@@ -236,7 +196,7 @@ void	Engine::_updateDeltaTime(void)
 
 /* -------------------------------- Interface ------------------------------- */
 
-void	Engine::_renderUI(Terrain& terrain)
+void	Engine::_renderUI(Terrain& terrain, Water& water)
 {
 	UI.createNewFrame();
 
@@ -256,6 +216,9 @@ void	Engine::_renderUI(Terrain& terrain)
 	ImGui::ColorEdit3("Color 1", glm::value_ptr(terrain.color1));
 	ImGui::ColorEdit3("Color 2", glm::value_ptr(terrain.color2));
 	
+	ImGui::SliderFloat("Water Height", &water.position.y, 0, 1000, "%.1f");
+	ImGui::ColorEdit3("Water Color", glm::value_ptr(water.color));
+
 	ImGui::End();
 
 	UI.render();

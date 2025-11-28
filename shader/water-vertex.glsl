@@ -5,14 +5,15 @@ layout (location = 1) in vec3	aNormal;
 layout (location = 2) in vec3	aColor;
 layout (location = 3) in vec2	aTextureUV;
 
+uniform float		glTime;
+
+uniform vec3		color;
+uniform float		level;
 uniform mat4		model;
 uniform mat4		cameraMatrix;
-uniform float		heightFactor;
-uniform sampler2D	heightMap;
 
 out	DATA
 {
-	float	noiseValue;
 	vec3	normal;
 	vec3	color;
 	vec2	textureUV;
@@ -21,21 +22,23 @@ out	DATA
 
 void	main()
 {
-	float	noiseValue = texture(heightMap, aTextureUV).r;
-	float	height = pow(noiseValue, 8) * heightFactor;
+	float wave = (
+		sin(150.0 * aPosition.x + glTime )
+		* cos(100.0 * aPosition.z + glTime)
+		* 1.0);
+
 
 	vec3	currentPosition = vec3(model * vec4(
 		aPosition.x,
-		height,
+		level + wave,
 		aPosition.z,
 		1.0f
 	));
 
 	gl_Position = vec4(currentPosition, 1.0f);
 
-	data_out.noiseValue = noiseValue;
 	data_out.normal = aNormal;
-	data_out.color = aColor;
+	data_out.color = color;
 	data_out.textureUV = aTextureUV;
 	data_out.projection = cameraMatrix;
 }

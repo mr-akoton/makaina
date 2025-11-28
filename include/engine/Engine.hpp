@@ -11,6 +11,7 @@
 
 # include <core/Window.hpp>
 # include <engine/Terrain.hpp>
+# include <engine/Water.hpp>
 # include <ui/Interface.hpp>
 # include <utils/types.hpp>
 
@@ -49,7 +50,7 @@ class	Engine
 		void	_handleInput(void);
 		void	_displayFPS(void);
 		void	_updateDeltaTime(void);
-		void	_renderUI(Terrain& terrain);
+		void	_renderUI(Terrain& terrain, Water& water);
 
 	public	:
 		class	WindowInitFailedException: std::exception

@@ -72,6 +72,7 @@ COR_FILES	:= object/EBO.cpp \
 			   Window.cpp \
 
 ENG_FILES	:= Terrain.cpp \
+			   Water.cpp \
 			   Engine.cpp \
 
 SRC_FILES	:= main.cpp

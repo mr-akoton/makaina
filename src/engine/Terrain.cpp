@@ -17,8 +17,8 @@ Terrain::Terrain(
 	height(height),
 	gridSize(gridSize),
 	noiseTextureSize(noiseTextureSize),
-	position(Vector3(0.0f)),
-	model(Matrix4(1.0f)),
+	position(0.0f),
+	model(1.0f),
 	color0(1.0f),
 	color1(1.0f),
 	color2(1.0f)

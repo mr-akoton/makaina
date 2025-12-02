@@ -37,7 +37,6 @@ Texture::Texture(
 	glBindTexture(GL_TEXTURE_2D, 0);
 }
 
-#include <iostream>
 Texture::Texture(
 	FastNoiseLite const& noise,
 	int		width,

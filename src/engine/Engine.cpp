@@ -73,18 +73,14 @@ void	Engine::_initGlad(void)
 
 void	Engine::run(void)
 {
-	Shader		terrainShader(
+	Shader terrainShader(
 		"shader/terrain-vertex.glsl",
 		"shader/terrain-fragment.glsl",
 		"shader/terrain-geometry.glsl"
 	);
-
+	
+	Terrain		terrain(100, 100, 1, Vector3(0.0f, 0.0f, 0.0f));
 	Camera		camera(window.width, window.height, Vector3(0.0f, 0.0f, 0.0f));
-	FlatMesh	flatMesh(10, 10, 1);
-
-	Vector3 flatMeshPosition(0.0f);
-	Matrix4	flatMeshModel(1.0f);
-	flatMeshModel = glm::translate(flatMeshModel, flatMeshPosition);
 
 	while (not window.shouldClose())
 	{
@@ -103,11 +99,7 @@ void	Engine::run(void)
 
 		camera.updateMatrix(cameraFOV, cameraNearest, cameraFarthest);
 
-		terrainShader.enable();
-		terrainShader.setMat4("model", flatMeshModel);
-		camera.updateShaderMatrix(terrainShader, "cameraMatrix");
-		
-		flatMesh.draw(terrainShader, camera);
+		terrain.draw(terrainShader, camera);
 
 		_renderUI();
 

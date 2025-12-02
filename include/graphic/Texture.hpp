@@ -6,6 +6,7 @@
 
 # include <core/Shader.hpp>
 
+# include <algorithm>
 
 class	Texture
 {

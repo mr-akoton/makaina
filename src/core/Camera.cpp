@@ -1,6 +1,8 @@
 #include <core/Camera.hpp>
 
-#define GLM_ENABLE_EXPERIMENTAL
+#ifndef GLM_ENABLE_EXPERIMENTAL
+# define GLM_ENABLE_EXPERIMENTAL
+#endif
 
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>

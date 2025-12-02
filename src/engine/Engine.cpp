@@ -2,6 +2,7 @@
 #include <engine/Engine.hpp>
 #include <engine/Water.hpp>
 #include <engine/Terrain.hpp>
+#include <graphic/FlatMesh.hpp>
 #include <core/Shader.hpp>
 
 #include <glm/gtc/type_ptr.hpp>
@@ -15,10 +16,10 @@ Engine::Engine(
 	unsigned int	windowHeight,
 	const char*		windowTitle
 ):
+	cameraFOV(45.0f),
+	cameraNearest(0.1f),
+	cameraFarthest(1000.0f),
 	deltaTime(0.0f),
-	terrainHeight(0.0f),
-	lightPosition(1.0f, 1.0f, -1.0f),
-	lightColor(1.0f),
 	previousTime(0.0),
 	currentTime(0.0),
 	timeDifference(0.0),
@@ -72,45 +73,18 @@ void	Engine::_initGlad(void)
 
 void	Engine::run(void)
 {
-	Shader	terrainShader(
+	Shader		terrainShader(
 		"shader/terrain-vertex.glsl",
 		"shader/terrain-fragment.glsl",
 		"shader/terrain-geometry.glsl"
 	);
-	Shader	waterShader(
-		"shader/water-vertex.glsl",
-		"shader/water-fragment.glsl",
-		"shader/water-geometry.glsl"
-	);
 
-	int	terrainSize = 800;
-	int	noiseSize = terrainSize + 1;
+	Camera		camera(window.width, window.height, Vector3(0.0f, 0.0f, 0.0f));
+	FlatMesh	flatMesh(10, 10, 1);
 
-	Terrain	terrain(terrainSize, terrainSize, 1.0f, Vector2(noiseSize));
-	terrain.setNoiseType(FastNoiseLite::NoiseType_Perlin);
-	terrain.setNoiseFrequency(0.003f);
-	terrain.setNoiseFractalType(FastNoiseLite::FractalType_FBm);
-	terrain.setNoiseFractalAttributes(8, 2.0f, 0.4f);
-
-	Water	water(terrainSize / 2.0, terrainSize / 2.0, 2.0f, Vector3(0.0f, 0.0f, 1.0f));
-
-	Texture	heightMap(terrain.noise, noiseSize, noiseSize, 0, GL_RED, GL_FLOAT);
-
-	Camera	camera(window.width, window.height, Vector3(0.0f, 200.0f, 0.0f));
-
-	terrainShader.enable();
-	terrainShader.setMat4("model", terrain.model);
-	terrainShader.setVec3("lightPosition", lightPosition);
-	terrainShader.setVec3("lightColor", lightColor);
-	terrainShader.setFloat("cameraNear", 0.1f);
-	terrainShader.setFloat("cameraFar", 1000.f);
-
-	waterShader.enable();
-	waterShader.setMat4("model", water.model);
-	waterShader.setVec3("lightPosition", lightPosition);
-	waterShader.setVec3("lightColor", lightColor);
-	waterShader.setFloat("cameraNear", 0.1f);
-	waterShader.setFloat("cameraFar", 1000.f);
+	Vector3 flatMeshPosition(0.0f);
+	Matrix4	flatMeshModel(1.0f);
+	flatMeshModel = glm::translate(flatMeshModel, flatMeshPosition);
 
 	while (not window.shouldClose())
 	{
@@ -118,7 +92,7 @@ void	Engine::run(void)
 		_updateDeltaTime();
 		_handleInput();
 		
-		glClearColor(0.85f, 0.85f, 0.90f, 1.0f);
+		glClearColor(0.5f, 0.5f, 0.5f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		glEnable(GL_DEPTH_TEST);
 
@@ -127,33 +101,15 @@ void	Engine::run(void)
 			camera.input(window, deltaTime);
 		}
 
-		camera.updateMatrix(45.0f, 0.1f, 1000.0f);
-		heightMap.bind();
-		
+		camera.updateMatrix(cameraFOV, cameraNearest, cameraFarthest);
+
 		terrainShader.enable();
-		terrainShader.setVec3("lightPosition", lightPosition);
-		terrainShader.setVec3("lightColor", lightColor);
-		terrainShader.setFloat("heightFactor", terrainHeight);
-		terrainShader.setVec3("color0", terrain.color0);
-		terrainShader.setVec3("color1", terrain.color1);
-		terrainShader.setVec3("color2", terrain.color2);
-		heightMap.textureUnit(terrainShader, "heightMap", 0);
-		
-		terrain.render(terrainShader, camera);
+		terrainShader.setMat4("model", flatMeshModel);
 		camera.updateShaderMatrix(terrainShader, "cameraMatrix");
 		
-		waterShader.enable();
-		waterShader.setFloat("glTime", glfwGetTime());
-		waterShader.setVec3("lightPosition", lightPosition);
-		waterShader.setVec3("lightColor", lightColor);
-		waterShader.setVec3("color", water.color);
-		waterShader.setFloat("level", water.position.y);
-		
-		camera.updateShaderMatrix(waterShader, "cameraMatrix");
-		water.render(waterShader, camera);
-		
-		
-		_renderUI(terrain, water);
+		flatMesh.draw(terrainShader, camera);
+
+		_renderUI();
 
 		window.update();
 	}
@@ -196,32 +152,9 @@ void	Engine::_updateDeltaTime(void)
 
 /* -------------------------------- Interface ------------------------------- */
 
-void	Engine::_renderUI(Terrain& terrain, Water& water)
+void	Engine::_renderUI()
 {
-	UI.createNewFrame();
 
-	ImGui::Begin("Settings");
-
-	ImGui::SliderFloat("Height", &terrainHeight, 0.0f, 1000.0f, "%.1f");
-	ImGui::SliderFloat3(
-		"Light Position",
-		glm::value_ptr(lightPosition),
-		-1.0f,
-		1.0f,
-		"%.2f"
-	);
-
-	ImGui::ColorEdit3("Light Color", glm::value_ptr(lightColor));
-	ImGui::ColorEdit3("Color 0", glm::value_ptr(terrain.color0));
-	ImGui::ColorEdit3("Color 1", glm::value_ptr(terrain.color1));
-	ImGui::ColorEdit3("Color 2", glm::value_ptr(terrain.color2));
-	
-	ImGui::SliderFloat("Water Height", &water.position.y, 0, 1000, "%.1f");
-	ImGui::ColorEdit3("Water Color", glm::value_ptr(water.color));
-
-	ImGui::End();
-
-	UI.render();
 }
 
 /* ========================================================================== */

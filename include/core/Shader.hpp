@@ -35,7 +35,10 @@ class	Shader
 		void	setMat4(const std::string& name, const Matrix4& value) const;
  
 	private	:
-		void	_debugShaderCompilation(GLuint shaderId);
+		void	_debugShaderCompilation(
+			GLuint				shaderId,
+			const std::string	shaderName
+		);
 		void	_debugProgramLink(GLuint programId);
 };
 

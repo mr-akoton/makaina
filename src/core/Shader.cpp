@@ -24,12 +24,12 @@ Shader::Shader(
 	vertexShader = glCreateShader(GL_VERTEX_SHADER);
 	glShaderSource(vertexShader, 1, &vertexSource, NULL);
 	glCompileShader(vertexShader);
-	_debugShaderCompilation(vertexShader);
+	_debugShaderCompilation(vertexShader, vertexFile);
 
 	fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
 	glShaderSource(fragmentShader, 1, &fragmentSource, NULL);
 	glCompileShader(fragmentShader);
-	_debugShaderCompilation(fragmentShader);
+	_debugShaderCompilation(fragmentShader, fragmentFile);
 
 	if (geometryFile != NULL)
 	{
@@ -39,7 +39,7 @@ Shader::Shader(
 		geometryShader = glCreateShader(GL_GEOMETRY_SHADER);
 		glShaderSource(geometryShader, 1, &geometrySource, NULL);
 		glCompileShader(geometryShader);
-		_debugShaderCompilation(geometryShader);
+		_debugShaderCompilation(geometryShader, geometryFile);
 	}
 
 	id = glCreateProgram();
@@ -148,7 +148,10 @@ void	Shader::setMat4(const std::string& name, const Matrix4& value) const
 /*                                   DEBUG                                    */
 /* ========================================================================== */
 
-void	Shader::_debugShaderCompilation(GLuint shaderId)
+void	Shader::_debugShaderCompilation(
+	GLuint				shaderId,
+	const std::string	shaderType
+)
 {
 	int		success;
 	char	infoLog[INFO_LOG_BUFFER_SIZE];
@@ -157,7 +160,7 @@ void	Shader::_debugShaderCompilation(GLuint shaderId)
 	if (not success)
 	{
 		glGetShaderInfoLog(shaderId, INFO_LOG_BUFFER_SIZE, NULL, infoLog);
-		std::cerr << "Error: ShaderCompilationFailed\n" << infoLog << std::endl;
+		std::cerr << "Error: " << shaderType << ": ShaderCompilationFailed\n" << infoLog << std::endl;
 	}
 }
 

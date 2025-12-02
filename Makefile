@@ -61,6 +61,7 @@ UTL_FILES	:= converter.cpp \
 
 GRP_FILES	:= Texture.cpp \
 			   Mesh.cpp \
+			   FlatMesh.cpp \
 
 USI_FILES	:= Interface.cpp \
 

@@ -21,23 +21,18 @@ class	Mesh
 	public	:
 		Mesh(void);
 		Mesh(VertexList& vertices, IndiceList& indices, TextureList& textures);
-		~Mesh();
+		virtual ~Mesh();
 
 		Mesh&	operator=(const Mesh& instance);
 
-		void	set(
-			VertexList& vertices,
-			IndiceList& indices,
-			TextureList& textures
-		);
 		void	draw(
-			Shader& shader,
-			Camera& camera,
-			const char* renderType = "element"
+			Shader&		shader,
+			Camera&		camera,
+			const char*	renderType = "element"
 		);
 	
 	public	:
-		void	assignBuffer(void);
+		void	_assignBuffer(void);
 };
 
 #endif /* MESH_HPP ========================================================== */

@@ -24,11 +24,11 @@ class	Engine
 		Window		window;
 		Interface	UI;
 		
-		float	deltaTime;
-		float	terrainHeight;
-		Vector3	lightPosition;
-		Vector3	lightColor;
+		float	cameraFOV;
+		float	cameraNearest;
+		float	cameraFarthest;
 
+		float			deltaTime;
 		double			previousTime;
 		double			currentTime;
 		double			timeDifference;
@@ -47,10 +47,12 @@ class	Engine
 	private	:
 		void	_initGlfw(void);
 		void	_initGlad(void);
-		void	_handleInput(void);
+
 		void	_displayFPS(void);
 		void	_updateDeltaTime(void);
-		void	_renderUI(Terrain& terrain, Water& water);
+		
+		void	_handleInput(void);
+		void	_renderUI(void);
 
 	public	:
 		class	WindowInitFailedException: std::exception

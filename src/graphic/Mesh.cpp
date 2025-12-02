@@ -5,12 +5,9 @@
 /*                         CONSTRUCTOR AND DESTRUCTOR                         */
 /* ========================================================================== */
 
-Mesh::Mesh(void):
-	vertices(VertexList()),
-	indices(IndiceList()),
-	textures(TextureList())
+Mesh::Mesh(void)
 {
-	/* Do nothing */
+	
 }
 
 Mesh::Mesh(VertexList& vertices, IndiceList& indices, TextureList& textures):
@@ -18,7 +15,7 @@ Mesh::Mesh(VertexList& vertices, IndiceList& indices, TextureList& textures):
 	indices(indices),
 	textures(textures)
 {
-	assignBuffer();
+	_assignBuffer();
 }
 
 Mesh::~Mesh()
@@ -39,7 +36,7 @@ Mesh&	Mesh::operator=(const Mesh& instance)
 		this->vertices = vertices;
 		this->indices = indices;
 		this->textures = textures;
-		this->assignBuffer();
+		this->_assignBuffer();
 	}
 	return *this;
 }
@@ -47,18 +44,6 @@ Mesh&	Mesh::operator=(const Mesh& instance)
 /* ========================================================================== */
 /*                                  METHODES                                  */
 /* ========================================================================== */
-
-void	Mesh::set(
-	VertexList& vertices,
-	IndiceList& indices,
-	TextureList& textures
-)
-{
-	this->vertices = vertices;
-	this->indices = indices;
-	this->textures = textures;
-	this->assignBuffer();
-}
 
 void	Mesh::draw(Shader& shader, Camera& camera, const char* renderType)
 {
@@ -99,7 +84,7 @@ void	Mesh::draw(Shader& shader, Camera& camera, const char* renderType)
 	}
 }
 
-void	Mesh::assignBuffer(void)
+void	Mesh::_assignBuffer(void)
 {
 	vao.bind();
 

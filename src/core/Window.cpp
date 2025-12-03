@@ -133,7 +133,6 @@ void	Window::resetCursor(void) const
 void	Window::initImGui(void) const
 {
 	ImGui_ImplGlfw_InitForOpenGL(_id, true);
-
 }
 
 /* ========================================================================== */

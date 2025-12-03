@@ -38,12 +38,12 @@ Texture::Texture(
 }
 
 Texture::Texture(
-	FastNoiseLite const& noise,
-	int		width,
-	int		height,
-	GLuint	slot,
-	GLenum	format,
-	GLenum	pixType
+	const FastNoiseLite&	noise,
+	int						width,
+	int						height,
+	GLuint					slot,
+	GLenum					format,
+	GLenum					pixType
 ):
 	width(width),
 	height(height),

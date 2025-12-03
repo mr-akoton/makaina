@@ -14,6 +14,7 @@ Terrain::Terrain(
 	height(height),
 	gridSize(gridSize),
 	mesh(width, height, gridSize),
+	heightFactor(500.0f),
 	position(position),
 	model(1.0f)
 {
@@ -23,6 +24,32 @@ Terrain::Terrain(
 /* ========================================================================== */
 /*                                   METHOD                                   */
 /* ========================================================================== */
+
+void	Terrain::setNoiseType(FastNoiseLite::NoiseType type)
+{
+	noise.SetNoiseType(type);
+}
+
+void	Terrain::setNoiseFrequency(float frequency)
+{
+	noise.SetFrequency(frequency);
+}
+
+void	Terrain::setNoiseFractalType(FastNoiseLite::FractalType type)
+{
+	noise.SetFractalType(type);
+}
+
+void	Terrain::setNoiseFractalParameters(
+	int		octaves,
+	float	lacunarity,
+	float	gain
+)
+{
+	noise.SetFractalOctaves(octaves);
+	noise.SetFractalLacunarity(lacunarity);
+	noise.SetFractalGain(gain);
+}
 
 void	Terrain::draw(Shader& shader, Camera& camera)
 {

@@ -9,6 +9,7 @@
 # include <core/Camera.hpp>
 
 # include <glm/gtx/transform.hpp>
+# include <noise/FastNoiseLite.h>
 
 
 class	Terrain
@@ -19,7 +20,9 @@ class	Terrain
 		unsigned int	gridSize;
 
 		FlatMesh		mesh;
+		FastNoiseLite	noise;
 
+		float			heightFactor;
 		Vector3			position;
 		Matrix4			model;
 	
@@ -31,6 +34,14 @@ class	Terrain
 			Vector3			position
 		);
 
+		void	setNoiseType(FastNoiseLite::NoiseType type);
+		void	setNoiseFrequency(float value);
+		void	setNoiseFractalType(FastNoiseLite::FractalType type);
+		void	setNoiseFractalParameters(
+			int		octaves,
+			float	lacunarity,
+			float	gain
+		);
 		void	draw(Shader& shader, Camera& camera);
 };
 

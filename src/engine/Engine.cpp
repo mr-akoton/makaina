@@ -35,9 +35,13 @@ Engine::Engine(
 	_initGlad();
 
 	glEnable(GL_DEPTH_TEST);
+	
 	glEnable(GL_CULL_FACE);
 	glCullFace(GL_BACK);
 	glFrontFace(GL_CCW);
+	
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 }
 
 Engine::~Engine()
@@ -73,14 +77,25 @@ void	Engine::_initGlad(void)
 
 void	Engine::run(void)
 {
-	Shader terrainShader(
+	Shader	terrainShader(
 		"shader/terrain-vertex.glsl",
 		"shader/terrain-fragment.glsl",
 		"shader/terrain-geometry.glsl"
 	);
 	
+	Shader	waterShader(
+		"shader/water-vertex.glsl",
+		"shader/water-fragment.glsl",
+		"shader/water-geometry.glsl"
+	);
+
 	Terrain		terrain(100, 100, 1, Vector3(0.0f, 0.0f, 0.0f));
+	Water		water(100, 100, 1, Vector3(0.0f, 10.0f, 0.0f));
 	Camera		camera(window.width, window.height, Vector3(0.0f, 0.0f, 0.0f));
+
+	Texture	terrainHeighMap(terrain.noise, 100, 100, GL_TEXTURE0, GL_RED, GL_FLOAT);
+	terrainHeighMap.textureUnit(terrainShader, "heightMap", 0);
+	terrainShader.setFloat("heightFactor", terrain.heightFactor);
 
 	while (not window.shouldClose())
 	{
@@ -99,7 +114,10 @@ void	Engine::run(void)
 
 		camera.updateMatrix(cameraFOV, cameraNearest, cameraFarthest);
 
+		terrainHeighMap.bind();
+
 		terrain.draw(terrainShader, camera);
+		water.draw(waterShader, camera);
 
 		_renderUI();
 

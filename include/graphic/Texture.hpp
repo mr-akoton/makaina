@@ -28,12 +28,12 @@ class	Texture
 			GLenum		pixType
 		);
 		Texture(
-			FastNoiseLite const& noise,
-			int		width,
-			int		height,
-			GLuint	slot,
-			GLenum	format,
-			GLenum	pixType
+			const FastNoiseLite&	noise,
+			int						width,
+			int						height,
+			GLuint					slot,
+			GLenum					format,
+			GLenum					pixType
 		);
 		~Texture();
 		

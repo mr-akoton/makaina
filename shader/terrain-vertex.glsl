@@ -13,7 +13,6 @@ uniform sampler2D	heightMap;
 
 out DATA
 {
-	vec3	normal;
 	vec3	color;
 	vec2	textureUV;
 	mat4	projection;
@@ -22,11 +21,10 @@ out DATA
 
 void	main()
 {
-	float	noiseValue = texture(heightMap, textureUV).r;
-	float	height = noiseValue * heightFactor;
+	float	noiseValue = texture(heightMap, l_textureUV).r;
+	float	height = pow(noiseValue, 8) * heightFactor;
 
 	gl_Position = model * vec4(l_position.x, height, l_position.z, 1.0f);
-	data_out.normal = l_normal;
 	data_out.color = l_color;
 	data_out.textureUV = l_textureUV;
 	data_out.projection = cameraMatrix;

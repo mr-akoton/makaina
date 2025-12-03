@@ -22,7 +22,7 @@ Water::Water(
 {
 	model = glm::translate(model, position);
 
-	for (auto &vertex: mesh.vertices)
+	for (auto& vertex: mesh.vertices)
 	{
 		vertex.color = color;
 	}

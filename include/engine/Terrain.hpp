@@ -42,6 +42,11 @@ class	Terrain
 			float	lacunarity,
 			float	gain
 		);
+
+		void	setNoiseTextureUV(
+			unsigned int	noiseWidth,
+			unsigned int	noiseHeight
+		);
 		void	draw(Shader& shader, Camera& camera);
 };
 

@@ -19,6 +19,8 @@ Engine::Engine(
 	cameraFOV(45.0f),
 	cameraNearest(0.1f),
 	cameraFarthest(1000.0f),
+	lightPosition(1.0f, -1.0f, 1.0f),
+	lightColor(1.0f),
 	deltaTime(0.0f),
 	previousTime(0.0),
 	currentTime(0.0),
@@ -77,6 +79,8 @@ void	Engine::_initGlad(void)
 
 void	Engine::run(void)
 {
+	/* ------------------------------ // Shader // ------------------------------ */
+
 	Shader	terrainShader(
 		"shader/terrain-vertex.glsl",
 		"shader/terrain-fragment.glsl",
@@ -89,13 +93,32 @@ void	Engine::run(void)
 		"shader/water-geometry.glsl"
 	);
 
-	Terrain		terrain(100, 100, 1, Vector3(0.0f, 0.0f, 0.0f));
-	Water		water(100, 100, 1, Vector3(0.0f, 10.0f, 0.0f));
-	Camera		camera(window.width, window.height, Vector3(0.0f, 0.0f, 0.0f));
+	/* --------------------------- // Terrain setup // -------------------------- */
 
-	Texture	terrainHeighMap(terrain.noise, 100, 100, GL_TEXTURE0, GL_RED, GL_FLOAT);
-	terrainHeighMap.textureUnit(terrainShader, "heightMap", 0);
+	Terrain		terrain(800, 800, 1, Vector3(0.0f, 0.0f, 0.0f));
+	terrain.setNoiseType(FastNoiseLite::NoiseType_Perlin);
+	terrain.setNoiseFrequency(0.003f);
+	terrain.setNoiseFractalType(FastNoiseLite::FractalType_FBm);
+	terrain.setNoiseFractalParameters(8, 2.0f, 0.4f);
+	terrain.setNoiseTextureUV(1000, 1000);
+
+	/* ---------------------------- // Water setup // --------------------------- */
+
+	Water		water(800, 800, 1, Vector3(0.0f, 50.0f, 0.0f));
+
+	/* --------------------------- // Camera setup // --------------------------- */
+
+	Camera		camera(window.width, window.height, Vector3(0.0f, 100.0f, 0.0f));
+
+	/* ----------------------------- // Noise Map // ---------------------------- */
+
+	Texture	terrainHeightMap(terrain.noise, 1000, 1000, GL_TEXTURE0, GL_RED, GL_FLOAT);
+	terrainHeightMap.textureUnit(terrainShader, "heightMap", 0);
 	terrainShader.setFloat("heightFactor", terrain.heightFactor);
+	terrainShader.setVec3("lightPosition", lightPosition);
+	terrainShader.setVec3("lightColor", lightColor);
+
+	/* -------------------------------- MAIN LOOP ------------------------------- */
 
 	while (not window.shouldClose())
 	{
@@ -114,7 +137,7 @@ void	Engine::run(void)
 
 		camera.updateMatrix(cameraFOV, cameraNearest, cameraFarthest);
 
-		terrainHeighMap.bind();
+		terrainHeightMap.bind();
 
 		terrain.draw(terrainShader, camera);
 		water.draw(waterShader, camera);

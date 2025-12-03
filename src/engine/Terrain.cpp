@@ -14,7 +14,7 @@ Terrain::Terrain(
 	height(height),
 	gridSize(gridSize),
 	mesh(width, height, gridSize),
-	heightFactor(500.0f),
+	heightFactor(250.0f),
 	position(position),
 	model(1.0f)
 {
@@ -49,6 +49,27 @@ void	Terrain::setNoiseFractalParameters(
 	noise.SetFractalOctaves(octaves);
 	noise.SetFractalLacunarity(lacunarity);
 	noise.SetFractalGain(gain);
+}
+
+void	Terrain::setNoiseTextureUV(
+	unsigned int	noiseWidth,
+	unsigned int	noiseHeight
+)
+{
+	for (unsigned int z = 0; z < height; z++)
+	{
+		for (unsigned int x = 0; x < width; x++)
+		{
+			unsigned int	i = (z * width) + x;
+			
+			mesh.vertices[i].textureUV = Vector2(
+				static_cast<float>(x) / (noiseWidth - 1),
+				static_cast<float>(z) / (noiseHeight - 1)
+			);
+		}
+	}
+
+	mesh._assignBuffer();
 }
 
 void	Terrain::draw(Shader& shader, Camera& camera)

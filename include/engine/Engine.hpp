@@ -28,6 +28,9 @@ class	Engine
 		float	cameraNearest;
 		float	cameraFarthest;
 
+		Vector3	lightPosition;
+		Vector3	lightColor;
+
 		float			deltaTime;
 		double			previousTime;
 		double			currentTime;

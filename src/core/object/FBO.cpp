@@ -4,25 +4,25 @@
 /*                         CONSTRUCTOR AND DESTRUCTOR                         */
 /* ========================================================================== */
 
-VAO::VAO(void)
+FBO::FBO(void)
 {
-	glGenVertexArrays(1, &id);
+	glGenFramebuffers(1, &id);
 }
 
-VAO::~VAO()
+FBO::~FBO()
 {
-	glDeleteVertexArrays(1, &id);
+	glDeleteFramebuffers(1, &id);
 }
 
 /* ========================================================================== */
 /*                                  OPERATOR                                  */
 /* ========================================================================== */
 
-VAO&	VAO::operator=(const VAO& instance)
+FBO&	FBO::operator=(const FBO& instance)
 {
 	if (this != &instance)
 	{
-		glDeleteVertexArrays(1, &id);
+		glDeleteFramebuffers(1, &id);
 		id = instance.id;
 	}
 	return *this;
@@ -32,27 +32,23 @@ VAO&	VAO::operator=(const VAO& instance)
 /*                                   METHOD                                   */
 /* ========================================================================== */
 
-void VAO::linkAttribute(
-	VBO&		vbo,
-	GLuint		layout,
-	GLuint		size,
-	GLenum		type,
-	GLsizeiptr	stride,
-	void*		offset
-)
+void	FBO::attachTexture(Texture& texture)
 {
-	vbo.bind();
-	glVertexAttribPointer(layout, size, type, GL_FALSE, stride, offset);
-	glEnableVertexAttribArray(layout);
-	vbo.unbind();
+	glFramebufferTexture2D(
+		GL_FRAMEBUFFER,
+		GL_COLOR_ATTACHMENT0,
+		GL_TEXTURE_2D,
+		texture.id,
+		0
+	);
 }
 
-void	VAO::bind(void)
+void	FBO::bind(void)
 {
-	glBindVertexArray(id);
+	glBindFramebuffer(GL_FRAMEBUFFER, id);
 }
 
-void	VAO::unbind(void)
+void	FBO::unbind(void)
 {
-	glBindVertexArray(0);
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }

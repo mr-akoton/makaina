@@ -88,8 +88,8 @@ void	Mesh::_assignBuffer(void)
 {
 	vao.bind();
 
-	VBO	vbo(vertices);
-	EBO	ebo(indices);
+	VBO vbo(vertices);
+	EBO ebo(indices);
 
 	vao.linkAttribute(vbo, 0, 3, GL_FLOAT, sizeof(Vertex),
 		(void *)0);

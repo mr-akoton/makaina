@@ -79,6 +79,9 @@ void	Engine::_initGlad(void)
 
 void	Engine::run(void)
 {
+	const unsigned int	terrainSize = 499;
+	const unsigned int	terrainHeightMapSize = 1000;
+
 	/* ------------------------------ // Shader // ------------------------------ */
 
 	Shader	terrainShader(
@@ -95,24 +98,27 @@ void	Engine::run(void)
 
 	/* --------------------------- // Terrain setup // -------------------------- */
 
-	Terrain		terrain(800, 800, 1, Vector3(0.0f, 0.0f, 0.0f));
+	Terrain		terrain(terrainSize, terrainSize, 1, Vector3(0.0f, 0.0f, 0.0f));
 	terrain.setNoiseType(FastNoiseLite::NoiseType_Perlin);
 	terrain.setNoiseFrequency(0.003f);
 	terrain.setNoiseFractalType(FastNoiseLite::FractalType_FBm);
 	terrain.setNoiseFractalParameters(8, 2.0f, 0.4f);
-	terrain.setNoiseTextureUV(1000, 1000);
+	terrain.setNoiseTextureUV(terrainHeightMapSize, terrainHeightMapSize);
 
 	/* ---------------------------- // Water setup // --------------------------- */
 
-	Water		water(800, 800, 1, Vector3(0.0f, 50.0f, 0.0f));
+	Water		water(terrainSize, terrainSize, 1, Vector3(0.0f, 25.0f, 0.0f));
 
+	FBO					fbo;
+	FramebufferTexture	fboTexture(window.width, window.height, 1, GL_RGB, GL_RGB, GL_FLOAT);
+	
 	/* --------------------------- // Camera setup // --------------------------- */
 
 	Camera		camera(window.width, window.height, Vector3(0.0f, 100.0f, 0.0f));
 
 	/* ----------------------------- // Noise Map // ---------------------------- */
 
-	Texture	terrainHeightMap(terrain.noise, 1000, 1000, GL_TEXTURE0, GL_RED, GL_FLOAT);
+	NoiseTexture	terrainHeightMap(terrain.noise, terrainHeightMapSize, terrainHeightMapSize, 0, GL_RED, GL_FLOAT);
 	terrainHeightMap.textureUnit(terrainShader, "heightMap", 0);
 	terrainShader.setFloat("heightFactor", terrain.heightFactor);
 	terrainShader.setVec3("lightPosition", lightPosition);

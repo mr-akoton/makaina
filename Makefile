@@ -59,13 +59,17 @@ LIB_FILES	:= stb_image.cpp \
 UTL_FILES	:= converter.cpp \
 			   iomanip.cpp \
 
-GRP_FILES	:= Texture.cpp \
-			   Mesh.cpp \
-			   FlatMesh.cpp \
+GRP_FILES	:= texture/ATexture.cpp \
+			   texture/FramebufferTexture.cpp \
+			   texture/NoiseTexture.cpp \
+			   texture/Texture.cpp \
+			   mesh/FlatMesh.cpp \
+			   mesh/Mesh.cpp \
 
 USI_FILES	:= Interface.cpp \
 
 COR_FILES	:= object/EBO.cpp \
+			   object/FBO.cpp \
 			   object/VAO.cpp \
 			   object/VBO.cpp \
 			   Camera.cpp \

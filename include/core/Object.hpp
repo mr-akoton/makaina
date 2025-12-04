@@ -4,6 +4,8 @@
 # include <glad/glad.h>
 # include <utils/types.hpp>
 
+# include <graphic/Texture.hpp> 
+
 # include <vector>
 
 /* ========================================================================== */
@@ -38,6 +40,8 @@ class	VAO
 		VAO(void);
 		~VAO();
 
+		VAO&	operator=(const VAO& instance);
+
 		void	bind(void);
 		void	unbind(void);
 		void	linkAttribute(
@@ -63,6 +67,8 @@ class	VBO
 		VBO(VertexList& vertices);
 		~VBO();
 
+		VBO&	operator=(const VBO& instance);
+
 		void	bind(void);
 		void	unbind(void);
 };
@@ -80,9 +86,32 @@ class	EBO
 		EBO(IndiceList& indices);
 		~EBO();
 
+		EBO&	operator=(const EBO& instance);
+
 		void	bind(void);
 		void	unbind(void);
 };
 
+/* ========================================================================== */
+/*                             FRAME BUFFER OBJECT                            */
+/* ========================================================================== */
+
+class	FBO
+{
+	public	:
+		GLuint	id;
+		GLuint	textureId;
+
+	public	:
+		FBO(void);
+		~FBO();
+
+		FBO&	operator=(const FBO& instance);
+
+		void	attachTexture(Texture& texture);
+
+		void	bind(void);
+		void	unbind(void);
+};
 
 #endif /* OBJECT_HPP ======================================================== */

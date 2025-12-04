@@ -8,7 +8,11 @@
 
 # include <algorithm>
 
-class	Texture
+/* ========================================================================== */
+/*                                BASE TEXTURE                                */
+/* ========================================================================== */
+
+class	ATexture
 {
 	public	:
 		int			width;
@@ -18,16 +22,41 @@ class	Texture
 		GLuint		unit;
 		const char*	type;
 
-	
+	public	:
+		ATexture(int width, int height, GLuint slot, const char* type);
+		virtual ~ATexture();
+
+		void	textureUnit(Shader& shader, const char* uniform, GLuint unit);
+		void	bind(void);
+		void	unbind(void);
+};
+
+/* ========================================================================== */
+/*                               GENERAL TEXTURE                              */
+/* ========================================================================== */
+
+class	Texture: public ATexture
+{
 	public	:
 		Texture(
 			const char*	file,
-			const char*	texType,
+			const char*	type,
 			GLuint		slot,
 			GLenum		format,
 			GLenum		pixType
 		);
-		Texture(
+
+		~Texture();
+};
+
+/* ========================================================================== */
+/*                                NOISE TEXTURE                               */
+/* ========================================================================== */
+
+class	NoiseTexture: public ATexture
+{
+	public	:
+		NoiseTexture(
 			const FastNoiseLite&	noise,
 			int						width,
 			int						height,
@@ -35,11 +64,27 @@ class	Texture
 			GLenum					format,
 			GLenum					pixType
 		);
-		~Texture();
-		
-		void	textureUnit(Shader& shader, const char* uniform, GLuint unit);
-		void	bind(void);
-		void	unbind(void);
+
+		~NoiseTexture();
+};
+
+/* ========================================================================== */
+/*                             FRAMEBUFFER TEXTURE                            */
+/* ========================================================================== */
+
+class	FramebufferTexture: public ATexture
+{
+	public	:
+		FramebufferTexture(
+			int		width,
+			int		height,
+			GLuint	slot,
+			GLenum	internalFormat,
+			GLenum	format,
+			GLenum	pixType
+		);
+
+		~FramebufferTexture();
 };
 
 #endif /* TEXTURE_HPP ======================================================= */

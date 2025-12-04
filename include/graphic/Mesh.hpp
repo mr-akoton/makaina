@@ -5,6 +5,7 @@
 # include <core/Camera.hpp>
 # include <core/Shader.hpp>
 # include <graphic/Texture.hpp>
+# include <memory>
 
 typedef std::vector<Texture>	TextureList;
 
@@ -13,10 +14,11 @@ class	Mesh
 {
 	public	:
 		VAO	vao;
-
+		
 		VertexList	vertices;
 		IndiceList	indices;
 		TextureList	textures;
+
 	
 	public	:
 		Mesh(void);

@@ -15,6 +15,8 @@
 class	VAO;
 class	VBO;
 class	EBO;
+class	FBO;
+class	RBO;
 
 struct	Vertex
 {
@@ -64,6 +66,7 @@ class	VBO
 		GLuint	id;
 	
 	public	:
+		VBO(const float* vertices, size_t size);
 		VBO(VertexList& vertices);
 		~VBO();
 
@@ -100,7 +103,6 @@ class	FBO
 {
 	public	:
 		GLuint	id;
-		GLuint	textureId;
 
 	public	:
 		FBO(void);
@@ -108,10 +110,31 @@ class	FBO
 
 		FBO&	operator=(const FBO& instance);
 
-		void	attachTexture(Texture& texture);
+		void	bind(void);
+		void	unbind(void);
+		void	attachTexture(FramebufferTexture& texture);
+		void	attachRenderbuffer(RBO& rbo);
+		void	checkAttachements(void) const;
+};
+
+/* ========================================================================== */
+/*                            RENDER BUFFER OBJECT                            */
+/* ========================================================================== */
+
+class	RBO
+{
+	public	:
+		GLuint	id;
+	
+	public	:
+		RBO(void);
+		~RBO();
+
+		RBO&	operator=(const RBO& instance);
 
 		void	bind(void);
 		void	unbind(void);
+		void	setStorage(unsigned int widht, unsigned int height);
 };
 
 #endif /* OBJECT_HPP ======================================================== */

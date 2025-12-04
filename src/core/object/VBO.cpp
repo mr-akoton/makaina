@@ -4,6 +4,13 @@
 /*                         CONSTRUCTOR AND DESTRUCTOR                         */
 /* ========================================================================== */
 
+VBO::VBO(const float* vertices, size_t size)
+{
+	glGenBuffers(1, &id);
+	glBindBuffer(GL_ARRAY_BUFFER, id);
+	glBufferData(GL_ARRAY_BUFFER, size, vertices, GL_DYNAMIC_DRAW);
+}
+
 VBO::VBO(VertexList& vertices)
 {
 	glGenBuffers(1, &id);
@@ -12,7 +19,7 @@ VBO::VBO(VertexList& vertices)
 		GL_ARRAY_BUFFER,
 		vertices.size() * sizeof(Vertex),
 		vertices.data(),
-		GL_STATIC_DRAW
+		GL_DYNAMIC_DRAW
 	);
 }
 

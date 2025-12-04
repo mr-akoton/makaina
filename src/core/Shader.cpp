@@ -54,6 +54,10 @@ Shader::Shader(
 
 	glDeleteShader(vertexShader);
 	glDeleteShader(fragmentShader);
+	if (geometryFile != NULL)
+	{
+		glDeleteShader(geometryShader);
+	}
 }
 
 

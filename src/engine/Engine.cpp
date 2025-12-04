@@ -96,6 +96,11 @@ void	Engine::run(void)
 		"shader/water-geometry.glsl"
 	);
 
+	// Shader	screenShader(
+	// 	"shader/screen-vertex.glsl",
+	// 	"shader/screen-fragment.glsl"
+	// );
+
 	/* --------------------------- // Terrain setup // -------------------------- */
 
 	Terrain		terrain(terrainSize, terrainSize, 1, Vector3(0.0f, 0.0f, 0.0f));
@@ -109,9 +114,38 @@ void	Engine::run(void)
 
 	Water		water(terrainSize, terrainSize, 1, Vector3(0.0f, 25.0f, 0.0f));
 
-	FBO					fbo;
-	FramebufferTexture	fboTexture(window.width, window.height, 1, GL_RGB, GL_RGB, GL_FLOAT);
-	
+	// FBO	fbo;
+	// fbo.bind();
+
+	// FramebufferTexture	fboTexture(window.width, window.height, 1, GL_RGB, GL_RGB, GL_FLOAT);
+	// fbo.attachTexture(fboTexture);
+
+	// RBO	rbo;
+	// rbo.bind();
+	// rbo.setStorage(window.width, window.height);
+	// fbo.attachRenderbuffer(rbo);
+
+	// fbo.checkAttachements();
+	// fbo.unbind();
+
+	// const float	screenRect[] = {
+ 	//	-1.0f,  1.0f,  0.0f, 1.0f,
+    //	-1.0f, -1.0f,  0.0f, 0.0f,
+    //	 1.0f, -1.0f,  1.0f, 0.0f,
+    //	-1.0f,  1.0f,  0.0f, 1.0f,
+    //	 1.0f, -1.0f,  1.0f, 0.0f,
+    //	 1.0f,  1.0f,  1.0f, 1.0f
+	// };
+
+	// VAO	screenRectVAO;
+	// screenRectVAO.bind();
+
+	// VBO	screenRectVBO(screenRect, sizeof(screenRect));
+    // glEnableVertexAttribArray(0);
+    // glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)0);
+    // glEnableVertexAttribArray(1);
+    // glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)(2 * sizeof(float)));
+
 	/* --------------------------- // Camera setup // --------------------------- */
 
 	Camera		camera(window.width, window.height, Vector3(0.0f, 100.0f, 0.0f));
@@ -124,6 +158,21 @@ void	Engine::run(void)
 	terrainShader.setVec3("lightPosition", lightPosition);
 	terrainShader.setVec3("lightColor", lightColor);
 
+	/* ------------------------------ // Shadow // ------------------------------ */
+
+	const unsigned int	shadowWidth = 1024, shadowHeight = 1024;
+
+	FBO					depthMapFBO;
+	FramebufferTexture	depthMap(shadowWidth, shadowHeight, 1, GL_DEPTH_COMPONENT, GL_DEPTH_COMPONENT, GL_FLOAT);
+	depthMap.setFilter(GL_NEAREST);
+	depthMap.setWrap(GL_REPEAT);
+
+	depthMapFBO.bind();
+	depthMapFBO.attachTexture(depthMap);
+	glDrawBuffer(GL_NONE);
+	glReadBuffer(GL_NONE);
+	depthMapFBO.unbind();  
+
 	/* -------------------------------- MAIN LOOP ------------------------------- */
 
 	while (not window.shouldClose())
@@ -132,6 +181,21 @@ void	Engine::run(void)
 		_updateDeltaTime();
 		_handleInput();
 		
+		// fbo.bind();
+		
+		// Shadow //
+		glViewport(0, 0, shadowWidth, shadowHeight);
+		depthMapFBO.bind();
+		glClear(GL_DEPTH_BUFFER_BIT);
+
+		terrainHeightMap.bind();
+		camera.updateMatrix(cameraFOV, cameraNearest, cameraFarthest);
+		terrain.draw(terrainShader, camera);
+
+		depthMapFBO.unbind();
+		// ------ //
+
+		glViewport(0, 0, window.width, window.height);
 		glClearColor(0.5f, 0.5f, 0.5f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		glEnable(GL_DEPTH_TEST);
@@ -144,10 +208,21 @@ void	Engine::run(void)
 		camera.updateMatrix(cameraFOV, cameraNearest, cameraFarthest);
 
 		terrainHeightMap.bind();
+		depthMap.bind();
 
 		terrain.draw(terrainShader, camera);
 		water.draw(waterShader, camera);
 
+		// fbo.unbind();
+		// glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
+		// glClear(GL_COLOR_BUFFER_BIT);
+		// screenShader.enable();
+		// screenRectVAO.bind();
+		// glDisable(GL_DEPTH_TEST);
+		// fboTexture.bind();
+		// fboTexture.textureUnit(screenShader, "screenTexture", 1);
+		// glDrawArrays(GL_TRIANGLES, 0, 6);
+		
 		_renderUI();
 
 		window.update();

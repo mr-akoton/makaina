@@ -28,7 +28,7 @@ CXX			:= g++
 ifeq ($(BUILD_TYPE), release)
 	CXXFLAGS = -Wall -Wextra -O2 -DNDEBUG -std=c++17
 else
-	CXXFLAGS = -Wall -Wextra -Wpedantic -O0 -std=c++17
+	CXXFLAGS = -Wall -Wextra -Wpedantic -O0 -std=c++17 -g
 endif
 
 CXXFLAGS	+= -I $(INC_DIR) -I $(EXT_DIR) -I $(EXT_DIR)/imgui
@@ -70,6 +70,7 @@ USI_FILES	:= Interface.cpp \
 
 COR_FILES	:= object/EBO.cpp \
 			   object/FBO.cpp \
+			   object/RBO.cpp \
 			   object/VAO.cpp \
 			   object/VBO.cpp \
 			   Camera.cpp \

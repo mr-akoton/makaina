@@ -26,7 +26,10 @@ class	ATexture
 		ATexture(int width, int height, GLuint slot, const char* type);
 		virtual ~ATexture();
 
+		void	setFilter(GLuint filter);
+		void	setWrap(GLuint wrap);
 		void	textureUnit(Shader& shader, const char* uniform, GLuint unit);
+
 		void	bind(void);
 		void	unbind(void);
 };

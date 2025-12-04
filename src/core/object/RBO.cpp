@@ -1,29 +1,28 @@
 #include <core/Object.hpp>
-#include <iostream>
 
 /* ========================================================================== */
 /*                         CONSTRUCTOR AND DESTRUCTOR                         */
 /* ========================================================================== */
 
-FBO::FBO(void)
+RBO::RBO(void)
 {
-	glGenFramebuffers(1, &id);
+	glGenRenderbuffers(1, &id);
 }
 
-FBO::~FBO()
+RBO::~RBO()
 {
-	glDeleteFramebuffers(1, &id);
+	glDeleteRenderbuffers(1, &id);
 }
 
 /* ========================================================================== */
 /*                                  OPERATOR                                  */
 /* ========================================================================== */
 
-FBO&	FBO::operator=(const FBO& instance)
+RBO&	RBO::operator=(const RBO& instance)
 {
 	if (this != &instance)
 	{
-		glDeleteFramebuffers(1, &id);
+		glDeleteRenderbuffers(1, &id);
 		id = instance.id;
 	}
 	return *this;
@@ -33,41 +32,17 @@ FBO&	FBO::operator=(const FBO& instance)
 /*                                   METHOD                                   */
 /* ========================================================================== */
 
-void	FBO::bind(void)
+void	RBO::bind(void)
 {
-	glBindFramebuffer(GL_FRAMEBUFFER, id);
+	glBindRenderbuffer(GL_RENDERBUFFER, id);
 }
 
-void	FBO::unbind(void)
+void	RBO::unbind(void)
 {
-	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	glBindRenderbuffer(GL_RENDERBUFFER, 0);
 }
 
-void	FBO::attachTexture(FramebufferTexture& texture)
+void	RBO::setStorage(unsigned int width, unsigned int height)
 {
-	glFramebufferTexture2D(
-		GL_FRAMEBUFFER,
-		GL_COLOR_ATTACHMENT0,
-		GL_TEXTURE_2D,
-		texture.id,
-		0
-	);
-}
-
-void	FBO::attachRenderbuffer(RBO& rbo)
-{
-	glFramebufferRenderbuffer(
-		GL_FRAMEBUFFER,
-		GL_DEPTH_STENCIL_ATTACHMENT,
-		GL_RENDERBUFFER,
-		rbo.id
-	);
-}
-
-void	FBO::checkAttachements(void) const
-{
-	if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
-	{
-		std::cerr << "ERROR::FRAMEBUFFER:: Framebuffer is not complete!" << std::endl;
-	}
+	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, width, height);
 }

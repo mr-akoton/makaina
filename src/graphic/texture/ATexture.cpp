@@ -22,6 +22,20 @@ ATexture::~ATexture()
 /*                                   METHOD                                   */
 /* ========================================================================== */
 
+void	ATexture::setFilter(GLuint filter)
+{
+	this->bind();
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, filter);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, filter);
+}
+
+void	ATexture::setWrap(GLuint wrap)
+{
+	this->bind();
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, wrap);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, wrap);
+}
+
 void	ATexture::textureUnit(Shader& shader, const char* uniform, GLuint unit)
 {
 	shader.enable();

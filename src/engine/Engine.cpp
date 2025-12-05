@@ -81,6 +81,7 @@ void	Engine::run(void)
 {
 	const unsigned int	terrainSize = 499;
 	const unsigned int	terrainHeightMapSize = 1000;
+	const unsigned int	waterHeightMapSize = 1000;
 
 	/* ------------------------------ // Shader // ------------------------------ */
 
@@ -113,6 +114,11 @@ void	Engine::run(void)
 	/* ---------------------------- // Water setup // --------------------------- */
 
 	Water		water(terrainSize, terrainSize, 1, Vector3(0.0f, 25.0f, 0.0f));
+	water.setNoiseType(FastNoiseLite::NoiseType_Perlin);
+	water.setNoiseFrequency(0.003f);
+	water.setNoiseFractalType(FastNoiseLite::FractalType_FBm);
+	water.setNoiseFractalParameters(8, 2.0f, 0.4f);
+	water.setNoiseTextureUV(waterHeightMapSize, waterHeightMapSize);
 
 	// FBO	fbo;
 	// fbo.bind();
@@ -157,6 +163,11 @@ void	Engine::run(void)
 	terrainShader.setFloat("heightFactor", terrain.heightFactor);
 	terrainShader.setVec3("lightPosition", lightPosition);
 	terrainShader.setVec3("lightColor", lightColor);
+
+	NoiseTexture	waterHeightMap(water.noise, waterHeightMapSize, waterHeightMapSize, 0, GL_RED, GL_FLOAT);
+	waterHeightMap.textureUnit(waterShader, "heightMap", 0);
+	waterShader.setVec3("lightPosition", lightPosition);
+	waterShader.setVec3("lightColor", lightColor);
 
 	/* ------------------------------ // Shadow // ------------------------------ */
 
@@ -208,7 +219,11 @@ void	Engine::run(void)
 		camera.updateMatrix(cameraFOV, cameraNearest, cameraFarthest);
 
 		terrainHeightMap.bind();
+		waterHeightMap.bind();
 		depthMap.bind();
+
+		waterShader.enable();
+		waterShader.setFloat("globalTime", glfwGetTime());
 
 		terrain.draw(terrainShader, camera);
 		water.draw(waterShader, camera);

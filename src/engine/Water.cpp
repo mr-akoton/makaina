@@ -60,6 +60,27 @@ void	Water::setNoiseFractalParameters(
 	noise.SetFractalGain(gain);
 }
 
+void	Water::setNoiseTextureUV(
+	unsigned int	noiseWidth,
+	unsigned int	noiseHeight
+)
+{
+	for (unsigned int z = 0; z < height; z++)
+	{
+		for (unsigned int x = 0; x < width; x++)
+		{
+			unsigned int	i = (z * width) + x;
+			
+			mesh.vertices[i].textureUV = Vector2(
+				static_cast<float>(x) / (noiseWidth - 1),
+				static_cast<float>(z) / (noiseHeight - 1)
+			);
+		}
+	}
+
+	mesh._assignBuffer();
+}
+
 void	Water::draw(Shader& shader, Camera& camera)
 {
 	shader.enable();

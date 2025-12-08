@@ -22,9 +22,9 @@ class	Terrain
 		FlatMesh		mesh;
 		FastNoiseLite	noise;
 
-		float			heightFactor;
-		Vector3			position;
-		Matrix4			model;
+		int			heightFactor;
+		Vector3		position;
+		Matrix4		model;
 	
 	public	:
 		Terrain(

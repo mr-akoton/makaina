@@ -55,7 +55,7 @@ class	Engine
 		void	_updateDeltaTime(void);
 		
 		void	_handleInput(void);
-		void	_renderUI(void);
+		void	_renderUI(Terrain& terrain, Water& water);
 
 	public	:
 		class	WindowInitFailedException: std::exception

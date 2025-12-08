@@ -47,8 +47,8 @@ Mesh&	Mesh::operator=(const Mesh& instance)
 
 void	Mesh::draw(Shader& shader, Camera& camera, const char* renderType)
 {
-	shader.enable();
 	vao.bind();
+	shader.enable();
 
 	unsigned int	ndiffuse = 0;
 	unsigned int	nspecular = 0;

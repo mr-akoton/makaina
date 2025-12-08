@@ -14,7 +14,7 @@ Terrain::Terrain(
 	height(height),
 	gridSize(gridSize),
 	mesh(width, height, gridSize),
-	heightFactor(250.0f),
+	heightFactor(250),
 	position(position),
 	model(1.0f)
 {

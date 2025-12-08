@@ -18,8 +18,8 @@ Camera::Camera(int width, int height, Vector3 position):
 	width(width),
 	height(height),
 	ratio((float)width / height),
-	speed(20.0f),
-	mouseSensitivity(20.0f),
+	speed(100.0f),
+	mouseSensitivity(1000.0f),
 	up(0.0f, 1.0f, 0.0f),
 	position(position),
 	orientation(0.0f, 0.0f, 1.0f),
@@ -84,7 +84,7 @@ void	Camera::_handleKeyInput(Window& window, float deltaTime)
 	}
 }
 
-void	Camera::_handleMouseInput(Window& window, float)
+void	Camera::_handleMouseInput(Window& window, float deltaTime)
 {
 	if (window.isButtonPressed(GLFW_MOUSE_BUTTON_1))
 	{
@@ -101,8 +101,8 @@ void	Camera::_handleMouseInput(Window& window, float)
 		Vector3	newOrientation;
 
 		window.getCursorPos(cursorx, cursory);
-		rotx = mouseSensitivity * (float)(cursory - (height / 2.0f)) / height;
-		roty = mouseSensitivity * (float)(cursorx - (width / 2.0f)) / width;
+		rotx = mouseSensitivity * (float)(cursory - (height / 2.0f)) / height * deltaTime;
+		roty = mouseSensitivity * (float)(cursorx - (width / 2.0f)) / width * deltaTime;
 
 		newOrientation = glm::rotate(
 			orientation,

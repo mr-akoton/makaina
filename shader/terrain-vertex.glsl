@@ -8,7 +8,7 @@ layout (location = 3) in vec2	l_textureUV;
 uniform mat4		model;
 uniform mat4		cameraMatrix;
 
-uniform float		heightFactor;
+uniform int			heightFactor;
 uniform sampler2D	heightMap;
 
 out DATA
@@ -22,7 +22,7 @@ out DATA
 void	main()
 {
 	float	noiseValue = texture(heightMap, l_textureUV).r;
-	float	height = pow(noiseValue, 5) * heightFactor;
+	float	height = pow(noiseValue, 8) * heightFactor;
 
 	gl_Position = model * vec4(l_position.x, height, l_position.z, 1.0f);
 	data_out.color = l_color;

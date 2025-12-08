@@ -22,15 +22,11 @@ out DATA
 void	main()
 {
 	float	noiseValue = texture(heightMap, l_textureUV).r;
-	float	wave = (
-		sin(150.0 * l_position.x + globalTime)
-		* cos(100.0 * l_position.z + globalTime)
-		* 1.0f
-	);
+	float	wave = cos(-20.0f * noiseValue + globalTime) * 1.0f;
 	
 	gl_Position = model * vec4(
 		l_position.x,
-		(l_position.y + (noiseValue * 10.0f) + wave),
+		l_position.y + wave,
 		l_position.z,
 		1.0f
 	);

@@ -112,7 +112,7 @@ void	Engine::run(void)
 
 	/* ---------------------------- // Water setup // --------------------------- */
 
-	Water	water(terrainSize, terrainSize, 1, Vector3(0.0f, 10.0f, 0.0f));
+	Water	water(terrainSize, terrainSize, 1, Vector3(0.0f, 25.0f, 0.0f));
 	water.setNoiseType(FastNoiseLite::NoiseType_Perlin);
 	water.setNoiseFrequency(0.003f);
 	water.setNoiseFractalType(FastNoiseLite::FractalType_FBm);
@@ -173,12 +173,12 @@ void	Engine::run(void)
 		glClearColor(0.5f, 0.5f, 0.5f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		glEnable(GL_DEPTH_TEST);
-
+		
 		Camera	reflectionCamera = camera;
 		reflectionCamera.orientation.y = -camera.orientation.y;
-		reflectionCamera.position.y = water.position.y + 11 - camera.position.y;
+		reflectionCamera.position.y = water.position.y - (camera.position.y - water.position.y);
 		reflectionCamera.updateMatrix(cameraFOV, cameraNearest, cameraFarthest);
-
+		
 		// ----- [ Terrain ] ----- //
 		terrainHeightMap.bind();
 		
@@ -186,12 +186,16 @@ void	Engine::run(void)
 		terrainShader.setInt("heightFactor", terrain.heightFactor);
 		terrainShader.setVec3("lightPosition", lightPosition);
 		terrainShader.setVec3("lightColor", lightColor);
-		terrain.draw(terrainShader, reflectionCamera);
+		
+		glEnable(GL_CLIP_DISTANCE0);
+		terrain.draw(terrainShader, reflectionCamera, Vector4(0.0f, 1.0f, 0.0f, -water.position.y));
+		glDisable(GL_CLIP_DISTANCE0);
 		
 		terrainHeightMap.unbind();
 		
 		reflectionFBO.unbind();
-		
+
+
 		glViewport(0, 0, window.width, window.height);
 		glClearColor(0.5f, 0.5f, 0.5f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -203,7 +207,6 @@ void	Engine::run(void)
 		terrainHeightMap.bind();
 		terrain.draw(terrainShader, camera);
 		terrainHeightMap.unbind();
-		
 		
 		// ------ [ Water ] ------ //
 		waterHeightMap.bind();
@@ -218,7 +221,7 @@ void	Engine::run(void)
 		
 		waterHeightMap.unbind();		
 		reflectionTexture.unbind();
-
+		
 		_renderUI(terrain, water);
 		window.update();
 	}

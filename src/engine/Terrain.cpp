@@ -72,10 +72,11 @@ void	Terrain::setNoiseTextureUV(
 	mesh._assignBuffer();
 }
 
-void	Terrain::draw(Shader& shader, Camera& camera)
+void	Terrain::draw(Shader& shader, Camera& camera, Vector4 clipPlane)
 {
 	shader.enable();
 	shader.setMat4("model", model);
+	shader.setVec4("clipPlane", clipPlane);
 	camera.updateShaderMatrix(shader, "cameraMatrix");
 
 	mesh.draw(shader, camera);

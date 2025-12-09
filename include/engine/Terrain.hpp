@@ -47,7 +47,11 @@ class	Terrain
 			unsigned int	noiseWidth,
 			unsigned int	noiseHeight
 		);
-		void	draw(Shader& shader, Camera& camera);
+		void	draw(
+			Shader&	shader, 
+			Camera&	camera, 
+			Vector4	clipPlane = Vector4(0.0f)
+		);
 };
 
 #endif /* TERRAIN_HPP ======================================================= */

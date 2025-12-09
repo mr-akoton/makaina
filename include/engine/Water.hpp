@@ -5,6 +5,7 @@
 # define GLM_ENABLE_EXPERIMENTAL
 #endif
 
+# include <core/Object.hpp>
 # include <graphic/FlatMesh.hpp>
 # include <core/Camera.hpp>
 
@@ -25,7 +26,7 @@ class	Water
 		Vector3			color;
 		Vector3			position;
 		Matrix4			model;
-	
+
 	public	:
 		Water(
 			unsigned int	width,
@@ -43,11 +44,11 @@ class	Water
 			float	lacunarity,
 			float	gain
 		);
-
 		void	setNoiseTextureUV(
 			unsigned int	noiseWidth,
 			unsigned int	noiseHeight
 		);
+
 		void	draw(Shader& shader, Camera& camera);
 };
 

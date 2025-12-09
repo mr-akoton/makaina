@@ -13,6 +13,11 @@
 /*                                 CONSTRUCTOR                                */
 /* ========================================================================== */
 
+Camera::Camera(const Camera& instance)
+{
+	*this = instance;
+}
+
 Camera::Camera(int width, int height, Vector3 position):
 	isMouseFirstClick(true),
 	width(width),
@@ -26,6 +31,28 @@ Camera::Camera(int width, int height, Vector3 position):
 	cameraMatrix(1.0f)
 {
 	/* Do nothing */
+}
+
+/* ========================================================================== */
+/*                                  OPERATOR                                  */
+/* ========================================================================== */
+
+Camera&	Camera::operator=(const Camera& instance)
+{
+	if (this != &instance)
+	{
+		isMouseFirstClick = instance.isMouseFirstClick;
+		width = instance.width;
+		height = instance.height;
+		ratio = instance.ratio;
+		speed = instance.speed;
+		mouseSensitivity = instance.mouseSensitivity;
+		up = instance.up;
+		position = instance.position;
+		orientation = instance.orientation;
+		cameraMatrix = instance.cameraMatrix;
+	}
+	return *this;
 }
 
 /* ========================================================================== */

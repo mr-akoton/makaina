@@ -112,20 +112,18 @@ void	Engine::run(void)
 
 	/* ---------------------------- // Water setup // --------------------------- */
 
-	Water	water(terrainSize, terrainSize, 1, Vector3(0.0f, 25.0f, 0.0f));
+	Water	water(terrainSize, terrainSize, 1, Vector3(0.0f, 10.0f, 0.0f));
 	water.setNoiseType(FastNoiseLite::NoiseType_Perlin);
 	water.setNoiseFrequency(0.003f);
 	water.setNoiseFractalType(FastNoiseLite::FractalType_FBm);
 	water.setNoiseFractalParameters(8, 2.0f, 0.4f);
 	water.setNoiseTextureUV(waterHeightMapSize, waterHeightMapSize);
 
-	ScreenMesh	screenMesh;
-
 	FBO	reflectionFBO;
 	
 	reflectionFBO.bind();
 
-	FramebufferTexture	reflectionTexture(window.width, window.height, 0, GL_RGB, GL_RGB, GL_FLOAT);
+	FramebufferTexture	reflectionTexture(window.width, window.height, 1, GL_RGB, GL_RGB, GL_FLOAT);
 	reflectionTexture.setFilter(GL_LINEAR);
 	reflectionFBO.attachTexture(reflectionTexture);
 	
@@ -170,12 +168,16 @@ void	Engine::run(void)
 		}
 
 		reflectionFBO.bind();
-		
+
+		glViewport(0, 0, window.width, window.height);
 		glClearColor(0.5f, 0.5f, 0.5f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		glEnable(GL_DEPTH_TEST);
 
-		camera.updateMatrix(cameraFOV, cameraNearest, cameraFarthest);
+		Camera	reflectionCamera = camera;
+		reflectionCamera.orientation.y = -camera.orientation.y;
+		reflectionCamera.position.y = water.position.y + 11 - camera.position.y;
+		reflectionCamera.updateMatrix(cameraFOV, cameraNearest, cameraFarthest);
 
 		// ----- [ Terrain ] ----- //
 		terrainHeightMap.bind();
@@ -184,32 +186,38 @@ void	Engine::run(void)
 		terrainShader.setInt("heightFactor", terrain.heightFactor);
 		terrainShader.setVec3("lightPosition", lightPosition);
 		terrainShader.setVec3("lightColor", lightColor);
-		terrain.draw(terrainShader, camera);
-
+		terrain.draw(terrainShader, reflectionCamera);
+		
 		terrainHeightMap.unbind();
-
+		
+		reflectionFBO.unbind();
+		
+		glViewport(0, 0, window.width, window.height);
+		glClearColor(0.5f, 0.5f, 0.5f, 1.0f);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		glEnable(GL_DEPTH_TEST);
+		
+		camera.updateMatrix(cameraFOV, cameraNearest, cameraFarthest);
+		
+		// ----- [ Terrain ] ----- //
+		terrainHeightMap.bind();
+		terrain.draw(terrainShader, camera);
+		terrainHeightMap.unbind();
+		
 		
 		// ------ [ Water ] ------ //
 		waterHeightMap.bind();
-
+		reflectionTexture.bind();
+		
 		waterShader.enable();
 		waterShader.setVec3("lightPosition", lightPosition);
 		waterShader.setVec3("lightColor", lightColor);
 		waterShader.setFloat("globalTime", glfwGetTime());
+		reflectionTexture.textureUnit(waterShader, "reflectionTexture", 1);
 		water.draw(waterShader, camera);
 		
-		waterHeightMap.unbind();
-		
-		reflectionFBO.unbind();
-
-
-		glClearColor(0.5f, 0.5f, 0.5f, 1.0f);
-		glClear(GL_COLOR_BUFFER_BIT);
-		glDisable(GL_DEPTH_TEST);
-
-		screenShader.enable();
-		reflectionTexture.bind();
-		screenMesh.draw(screenShader, camera);
+		waterHeightMap.unbind();		
+		reflectionTexture.unbind();
 
 		_renderUI(terrain, water);
 		window.update();

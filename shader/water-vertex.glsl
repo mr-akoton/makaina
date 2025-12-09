@@ -26,7 +26,7 @@ void	main()
 	
 	gl_Position = model * vec4(
 		l_position.x,
-		l_position.y + wave,
+		l_position.y,
 		l_position.z,
 		1.0f
 	);

@@ -23,7 +23,10 @@ class	Camera
 		Matrix4	cameraMatrix;
 
 	public	:
+		Camera(const Camera& instance);
 		Camera(int width, int height, Vector3 position);
+
+		Camera&	operator=(const Camera& instance);
 
 		void	input(Window& window, float deltaTime);
 		void	updateMatrix(float fovDegree, float nearest, float farest);

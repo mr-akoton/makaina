@@ -21,15 +21,12 @@
 class	Engine
 {
 	public	:
-		Window		window;
-		Interface	UI;
+		Window			window;
+		Interface		UI;
+		Camera			camera;
 		
-		float	cameraFOV;
-		float	cameraNearest;
-		float	cameraFarthest;
-
-		Vector3	lightPosition;
-		Vector3	lightColor;
+		Vector3			lightPosition;
+		Vector3			lightColor;
 
 		float			deltaTime;
 		double			previousTime;
@@ -56,6 +53,9 @@ class	Engine
 		
 		void	_handleInput(void);
 		void	_renderUI(Terrain& terrain, Water& water);
+
+		void	_renderScene(Terrain& terrain, Water& water);
+		void	_renderSceneForWater(Terrain& terrain, Water& water);
 
 	public	:
 		class	WindowInitFailedException: std::exception

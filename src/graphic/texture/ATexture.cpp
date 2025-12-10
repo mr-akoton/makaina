@@ -1,4 +1,5 @@
 #include <graphic/Texture.hpp>
+#include <glm/gtc/type_ptr.hpp>
 
 /* ========================================================================== */
 /*                         CONSTRUCTOR AND DESTRUCTOR                         */
@@ -27,6 +28,7 @@ void	ATexture::setFilter(GLuint filter)
 	this->bind();
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, filter);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, filter);
+	this->unbind();
 }
 
 void	ATexture::setWrap(GLuint wrap)
@@ -34,6 +36,14 @@ void	ATexture::setWrap(GLuint wrap)
 	this->bind();
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, wrap);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, wrap);
+	this->unbind();
+}
+
+void	ATexture::setWrapBorderColor(Vector4 color)
+{
+	this->bind();
+	glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, glm::value_ptr(color));
+	this->unbind();
 }
 
 void	ATexture::textureUnit(Shader& shader, const char* uniform, GLuint unit)

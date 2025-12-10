@@ -1,5 +1,7 @@
 #include <engine/Terrain.hpp>
 
+#include <iostream>
+
 /* ========================================================================== */
 /*                                 CONSTRUCTOR                                */
 /* ========================================================================== */
@@ -21,9 +23,25 @@ Terrain::Terrain(
 	model = glm::translate(model, position);
 }
 
+Terrain::~Terrain()
+{
+	delete noiseTexture;
+}
+
+
 /* ========================================================================== */
 /*                                   METHOD                                   */
 /* ========================================================================== */
+
+void	Terrain::initNoiseTexture(unsigned int width, unsigned int height)
+{
+	noiseTexture = new NoiseTexture(noise, width, height, 0, GL_RED, GL_FLOAT);
+	
+	if (this->shader != nullptr)
+	{
+		noiseTexture->textureUnit(*shader, "heightMap", 0);
+	}
+}
 
 void	Terrain::setNoiseType(FastNoiseLite::NoiseType type)
 {
@@ -72,12 +90,27 @@ void	Terrain::setNoiseTextureUV(
 	mesh._assignBuffer();
 }
 
-void	Terrain::draw(Shader& shader, Camera& camera, Vector4 clipPlane)
+void	Terrain::setShader(Shader* shader)
 {
-	shader.enable();
-	shader.setMat4("model", model);
-	shader.setVec4("clipPlane", clipPlane);
-	camera.updateShaderMatrix(shader, "cameraMatrix");
+	this->shader = shader;
+}
 
-	mesh.draw(shader, camera);
+
+void	Terrain::draw(Camera& camera, Vector4 clipPlane)
+{
+	if (shader != nullptr)
+	{
+		shader->enable();
+		shader->setMat4("model", model);
+		shader->setVec4("clipPlane", clipPlane);
+		camera.updateShaderMatrix(*shader, "cameraMatrix");
+		
+		glEnable(GL_CLIP_DISTANCE0);
+		mesh.draw(*shader, camera);
+		glDisable(GL_CLIP_DISTANCE0);
+	}
+	else
+	{
+		std::cerr << "Warning: no shader was assign for this draw call" << std::endl;
+	}
 }

@@ -22,10 +22,17 @@ class	Water
 
 		FlatMesh		mesh;
 		FastNoiseLite	noise;
-
+		
 		Vector3			color;
 		Vector3			position;
 		Matrix4			model;
+		Shader*			shader;
+
+		FBO					reflectionFBO;
+		RBO					reflectionRBO;
+
+		NoiseTexture*		noiseTexture = nullptr;
+		FramebufferTexture*	reflectionTexture = nullptr;
 
 	public	:
 		Water(
@@ -35,7 +42,9 @@ class	Water
 			Vector3			position = Vector3(0.0f),
 			Vector3			color = Vector3(0.341f, 0.462f, 1.0f)
 		);
+		~Water();
 
+		void	initNoiseTexture(unsigned int width, unsigned int height);
 		void	setNoiseType(FastNoiseLite::NoiseType type);
 		void	setNoiseFrequency(float value);
 		void	setNoiseFractalType(FastNoiseLite::FractalType type);
@@ -49,7 +58,11 @@ class	Water
 			unsigned int	noiseHeight
 		);
 
-		void	draw(Shader& shader, Camera& camera);
+		void	setShader(Shader* shader);
+
+		void	initReflection(Window& window);
+
+		void	draw(Camera& camera);
 };
 
 #endif /* WATER_HPP ========================================================= */

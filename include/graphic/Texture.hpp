@@ -28,6 +28,7 @@ class	ATexture
 
 		void	setFilter(GLuint filter);
 		void	setWrap(GLuint wrap);
+		void	setWrapBorderColor(Vector4 color);
 		void	textureUnit(Shader& shader, const char* uniform, GLuint unit);
 
 		void	bind(void);

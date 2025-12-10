@@ -17,20 +17,19 @@ out DATA
 	vec3	color;
 	vec2	textureUV;
 	mat4	projection;
+	float	clipDistance;
 }	data_out;
-
-out float	gl_ClipDistance[1];
 
 void	main()
 {
 	float	noiseValue = texture(heightMap, l_textureUV).r;
 	float	height = pow(noiseValue, 8) * heightFactor;
 	vec4	currentPosition = vec4(l_position.x, height, l_position.z, 1.0f);
-	vec4	worldPosition = model * currentPosition;
 
-	gl_ClipDistance[0] = dot(worldPosition, clipPlane);
-	gl_Position = worldPosition;
+	gl_ClipDistance[0] = dot(currentPosition, clipPlane);
+	gl_Position = model * currentPosition;
 	data_out.color = l_color;
 	data_out.textureUV = l_textureUV;
 	data_out.projection = cameraMatrix;
+	data_out.clipDistance = gl_ClipDistance[0];
 }

@@ -18,9 +18,9 @@ Vector3	hexToRGB(std::string color)
 		std::string	b = hexColor.substr(4);
 
 		return Vector3(
-				(float)std::stoi(r, NULL, 16) / 255,
-				(float)std::stoi(g, NULL, 16) / 255,
-				(float)std::stoi(b, NULL, 16) / 255
+				(float)std::stoi(r, nullptr, 16) / 255,
+				(float)std::stoi(g, nullptr, 16) / 255,
+				(float)std::stoi(b, nullptr, 16) / 255
 			);
 	}
 	else

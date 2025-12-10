@@ -10,7 +10,7 @@ static void frameBufferSizeCallback(GLFWwindow* , int width, int height);
 /* ========================================================================== */
 
 Window::Window(void):
-	_id(NULL),
+	_id(nullptr),
 	width(0),
 	height(0)
 {
@@ -33,8 +33,8 @@ int	Window::init(unsigned int width, unsigned int height, const char* title)
 	this->width = width;
 	this->height = height;
 	
-	_id = glfwCreateWindow(width, height, title, NULL, NULL);
-	if (_id == NULL)
+	_id = glfwCreateWindow(width, height, title, nullptr, nullptr);
+	if (_id == nullptr)
 	{
 		return failure;
 	}
@@ -66,10 +66,10 @@ void	Window::update(void) const
 
 void	Window::destroy(void)
 {
-	if (_id != NULL)
+	if (_id != nullptr)
 	{
 		glfwDestroyWindow(_id);
-		_id = NULL;
+		_id = nullptr;
 	}
 }
 

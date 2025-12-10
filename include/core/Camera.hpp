@@ -13,6 +13,9 @@ class	Camera
 		bool	isMouseFirstClick;
 		int		width;
 		int		height;
+		float	fov;
+		float	nearest;
+		float	farthest;
 		float	ratio;
 		float	speed;
 		float	mouseSensitivity;
@@ -29,7 +32,8 @@ class	Camera
 		Camera&	operator=(const Camera& instance);
 
 		void	input(Window& window, float deltaTime);
-		void	updateMatrix(float fovDegree, float nearest, float farest);
+		void	updateMatrix(void);
+		void	updateMatrix(float fovDegree, float nearest, float farthest);
 		void	updateShaderMatrix(Shader& shader, const char* uniform);
 	
 	private	:

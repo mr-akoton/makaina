@@ -18,7 +18,7 @@ FramebufferTexture::FramebufferTexture(
 	glActiveTexture(GL_TEXTURE0 + unit);
 	glBindTexture(GL_TEXTURE_2D, id);
 	
-	glTexImage2D(GL_TEXTURE_2D, 0, internalFormat, width, height, 0, format, pixType, NULL);
+	glTexImage2D(GL_TEXTURE_2D, 0, internalFormat, width, height, 0, format, pixType, nullptr);
 }
 
 FramebufferTexture::~FramebufferTexture()

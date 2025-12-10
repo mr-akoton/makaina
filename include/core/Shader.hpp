@@ -19,7 +19,7 @@ class	Shader
 		Shader(
 			const char* vertexFile,
 			const char* fragmentFile,
-			const char* geometryFile = NULL
+			const char* geometryFile = nullptr
 		);
 		~Shader();
 

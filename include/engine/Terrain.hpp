@@ -6,6 +6,7 @@
 #endif
 
 # include <graphic/FlatMesh.hpp>
+# include <core/Shader.hpp>
 # include <core/Camera.hpp>
 
 # include <glm/gtx/transform.hpp>
@@ -21,10 +22,13 @@ class	Terrain
 
 		FlatMesh		mesh;
 		FastNoiseLite	noise;
+		NoiseTexture	*noiseTexture;
 
 		int			heightFactor;
 		Vector3		position;
 		Matrix4		model;
+
+		Shader		*shader = nullptr;
 	
 	public	:
 		Terrain(
@@ -33,7 +37,9 @@ class	Terrain
 			unsigned int	gridSize,
 			Vector3			position
 		);
+		~Terrain();
 
+		void	initNoiseTexture(unsigned int width, unsigned int height);
 		void	setNoiseType(FastNoiseLite::NoiseType type);
 		void	setNoiseFrequency(float value);
 		void	setNoiseFractalType(FastNoiseLite::FractalType type);
@@ -42,13 +48,14 @@ class	Terrain
 			float	lacunarity,
 			float	gain
 		);
-
 		void	setNoiseTextureUV(
 			unsigned int	noiseWidth,
 			unsigned int	noiseHeight
 		);
+
+		void	setShader(Shader* shader);
+
 		void	draw(
-			Shader&	shader, 
 			Camera&	camera, 
 			Vector4	clipPlane = Vector4(0.0f)
 		);

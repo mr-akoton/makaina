@@ -112,7 +112,7 @@ class	FBO
 
 		void	bind(void);
 		void	unbind(void);
-		void	attachTexture(FramebufferTexture& texture);
+		void	attachTexture(FramebufferTexture& texture, GLenum attachment);
 		void	attachRenderbuffer(RBO& rbo);
 		void	checkAttachements(void) const;
 };

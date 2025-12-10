@@ -22,6 +22,9 @@ Camera::Camera(int width, int height, Vector3 position):
 	isMouseFirstClick(true),
 	width(width),
 	height(height),
+	fov(45.0f),
+	nearest(0.1f),
+	farthest(1000.0f),
 	ratio((float)width / height),
 	speed(100.0f),
 	mouseSensitivity(1000.0f),
@@ -44,6 +47,9 @@ Camera&	Camera::operator=(const Camera& instance)
 		isMouseFirstClick = instance.isMouseFirstClick;
 		width = instance.width;
 		height = instance.height;
+		fov = instance.fov;
+		nearest = instance.nearest;
+		farthest = instance.farthest;
 		ratio = instance.ratio;
 		speed = instance.speed;
 		mouseSensitivity = instance.mouseSensitivity;
@@ -59,13 +65,27 @@ Camera&	Camera::operator=(const Camera& instance)
 /*                                   METHOD                                   */
 /* ========================================================================== */
 
-void	Camera::updateMatrix(float fov, float nearest, float farest)
+void	Camera::updateMatrix(void)
 {
 	Matrix4	view(1.0f);
 	Matrix4	projection(1.0f);
 
 	view = glm::lookAt(position, position + orientation, up);
-	projection = glm::perspective(glm::radians(fov), ratio, nearest, farest);
+	projection = glm::perspective(glm::radians(fov), ratio, nearest, farthest);
+	cameraMatrix = projection * view;
+}
+
+void	Camera::updateMatrix(float fov, float nearest, float farthest)
+{
+	this->fov = fov;
+	this->nearest = nearest;
+	this->farthest = farthest;
+
+	Matrix4	view(1.0f);
+	Matrix4	projection(1.0f);
+
+	view = glm::lookAt(position, position + orientation, up);
+	projection = glm::perspective(glm::radians(fov), ratio, nearest, farthest);
 	cameraMatrix = projection * view;
 }
 

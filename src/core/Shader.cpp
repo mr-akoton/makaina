@@ -22,22 +22,22 @@ Shader::Shader(
 	GLuint	vertexShader, fragmentShader, geometryShader;
 
 	vertexShader = glCreateShader(GL_VERTEX_SHADER);
-	glShaderSource(vertexShader, 1, &vertexSource, NULL);
+	glShaderSource(vertexShader, 1, &vertexSource, nullptr);
 	glCompileShader(vertexShader);
 	_debugShaderCompilation(vertexShader, vertexFile);
 
 	fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
-	glShaderSource(fragmentShader, 1, &fragmentSource, NULL);
+	glShaderSource(fragmentShader, 1, &fragmentSource, nullptr);
 	glCompileShader(fragmentShader);
 	_debugShaderCompilation(fragmentShader, fragmentFile);
 
-	if (geometryFile != NULL)
+	if (geometryFile != nullptr)
 	{
 		std::string	geometryFileContent = getFileContent(geometryFile);
 		const char*	geometrySource = geometryFileContent.c_str();
 
 		geometryShader = glCreateShader(GL_GEOMETRY_SHADER);
-		glShaderSource(geometryShader, 1, &geometrySource, NULL);
+		glShaderSource(geometryShader, 1, &geometrySource, nullptr);
 		glCompileShader(geometryShader);
 		_debugShaderCompilation(geometryShader, geometryFile);
 	}
@@ -45,7 +45,7 @@ Shader::Shader(
 	id = glCreateProgram();
 	glAttachShader(id, vertexShader);
 	glAttachShader(id, fragmentShader);
-	if (geometryFile != NULL)
+	if (geometryFile != nullptr)
 	{
 		glAttachShader(id, geometryShader);
 	}
@@ -54,7 +54,7 @@ Shader::Shader(
 
 	glDeleteShader(vertexShader);
 	glDeleteShader(fragmentShader);
-	if (geometryFile != NULL)
+	if (geometryFile != nullptr)
 	{
 		glDeleteShader(geometryShader);
 	}
@@ -163,7 +163,7 @@ void	Shader::_debugShaderCompilation(
 	glGetShaderiv(shaderId, GL_COMPILE_STATUS, &success);
 	if (not success)
 	{
-		glGetShaderInfoLog(shaderId, INFO_LOG_BUFFER_SIZE, NULL, infoLog);
+		glGetShaderInfoLog(shaderId, INFO_LOG_BUFFER_SIZE, nullptr, infoLog);
 		std::cerr << "Error: " << shaderType << ": ShaderCompilationFailed\n" << infoLog << std::endl;
 	}
 }
@@ -176,7 +176,7 @@ void	Shader::_debugProgramLink(GLuint programId)
 	glGetProgramiv(programId, GL_LINK_STATUS, &success);
 	if (not success)
 	{
-		glGetProgramInfoLog(programId, INFO_LOG_BUFFER_SIZE, NULL, infoLog);
+		glGetProgramInfoLog(programId, INFO_LOG_BUFFER_SIZE, nullptr, infoLog);
 		std::cerr << "Error: ProgramLinkFailed\n" << infoLog << std::endl;
 	}
 }

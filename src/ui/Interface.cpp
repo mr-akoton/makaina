@@ -5,15 +5,15 @@
 /* ========================================================================== */
 
 Interface::Interface(void):
-	window(NULL),
-	io(NULL)
+	window(nullptr),
+	io(nullptr)
 {
 	/* Do nothing */
 }
 
 Interface::Interface(Window& window):
 	window(&window),
-	io(NULL)
+	io(nullptr)
 {
 	IMGUI_CHECKVERSION();
 	ImGui::CreateContext();

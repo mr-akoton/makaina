@@ -1,4 +1,5 @@
 #include <engine/Water.hpp>
+
 #include <iostream>
 
 /* ========================================================================== */
@@ -30,9 +31,44 @@ Water::Water(
 	mesh._assignBuffer();
 }
 
+Water::~Water()
+{
+	delete	reflectionTexture;
+}
+
+/* ========================================================================== */
+/*                       REFLECTION AND REFRACTION LOGIC                      */
+/* ========================================================================== */
+
+void	Water::initReflection(Window& window)
+{
+	reflectionFBO.bind();
+	reflectionTexture = new FramebufferTexture(window.width, window.height, 1, GL_RGB, GL_RGB, GL_FLOAT);
+	reflectionTexture->setFilter(GL_LINEAR);
+	reflectionFBO.attachTexture(*reflectionTexture, GL_COLOR_ATTACHMENT0);
+	
+	reflectionRBO.bind();
+	reflectionRBO.setStorage(window.width, window.height);
+	reflectionRBO.unbind();
+	reflectionFBO.attachRenderbuffer(reflectionRBO);
+
+	reflectionFBO.checkAttachements();
+	reflectionFBO.unbind();
+}
+
 /* ========================================================================== */
 /*                                   METHOD                                   */
 /* ========================================================================== */
+
+void	Water::initNoiseTexture(unsigned int width, unsigned int height)
+{
+	noiseTexture = new NoiseTexture(noise, width, height, 0, GL_RED, GL_FLOAT);
+	
+	if (this->shader != nullptr)
+	{
+		noiseTexture->textureUnit(*shader, "heightMap", 0);
+	}
+}
 
 void	Water::setNoiseType(FastNoiseLite::NoiseType type)
 {
@@ -81,11 +117,24 @@ void	Water::setNoiseTextureUV(
 	mesh._assignBuffer();
 }
 
-void	Water::draw(Shader& shader, Camera& camera)
+void	Water::setShader(Shader* shader)
 {
-	shader.enable();
-	shader.setMat4("model", model);
-	camera.updateShaderMatrix(shader, "cameraMatrix");
+	this->shader = shader;
+}
 
-	mesh.draw(shader, camera);
+
+void	Water::draw(Camera& camera)
+{
+	if (shader != nullptr)
+	{
+		shader->enable();
+		shader->setMat4("model", model);
+		camera.updateShaderMatrix(*shader, "cameraMatrix");
+
+		mesh.draw(*shader, camera);
+	}
+	else
+	{
+		std::cerr << "Warning: no shader was assign for this draw call" << std::endl;
+	}
 }

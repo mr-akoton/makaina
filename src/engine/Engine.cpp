@@ -107,7 +107,7 @@ void	Engine::run(void)
 
 	/* ---------------------------- // Water setup // --------------------------- */
 
-	Water	water(terrainSize, terrainSize, 1, Vector3(0.0f, 25.0f, 0.0f));
+	Water	water(terrainSize, terrainSize, 1, Vector3(0.0f, 40.0f, 0.0f));
 	water.setShader(&waterShader);
 	water.setNoiseType(FastNoiseLite::NoiseType_Perlin);
 	water.setNoiseFrequency(0.003f);
@@ -115,12 +115,28 @@ void	Engine::run(void)
 	water.setNoiseFractalParameters(8, 2.0f, 0.4f);
 	water.setNoiseTextureUV(waterHeightMapSize, waterHeightMapSize);
 	water.initNoiseTexture(waterHeightMapSize, waterHeightMapSize);
-	water.initReflection(window);
+	water.initEffects(window);
 
 	/* -------------------------------- MAIN LOOP ------------------------------- */
 
+	FBO	depthFBO;
+
+	depthFBO.bind();
+
+	depthTexture = new FramebufferTexture(window.width, window.height, 3, GL_DEPTH_COMPONENT, GL_DEPTH_COMPONENT, GL_FLOAT);
+	depthTexture->setFilter(GL_NEAREST);
+	depthTexture->setWrap(GL_CLAMP_TO_BORDER);
+	depthTexture->setWrapBorderColor(Vector4(0.0f));
+	depthFBO.attachTexture(*depthTexture, GL_DEPTH_ATTACHMENT);
+
+	depthFBO.checkAttachements();
+	depthFBO.unbind();
+
+
 	while (not window.shouldClose())
 	{
+		window.pollEvents();
+
 		_displayFPS();
 		_updateDeltaTime();
 		_handleInput();
@@ -132,46 +148,78 @@ void	Engine::run(void)
 
 		camera.updateMatrix();
 		
+		_renderDepth(terrain, water, depthFBO);
 		_renderSceneForWater(terrain, water);
 		_renderScene(terrain, water);
 
 		_renderUI(terrain, water);
 		window.update();
 	}
+
+	delete depthTexture;
 }
 
-
-void	Engine::_renderSceneForWater(Terrain& terrain, Water& water)
+void	Engine::_renderDepth(Terrain& terrain, Water&, FBO& depthFBO)
 {
-		water.reflectionFBO.bind();
+		depthFBO.bind();
 
 		glViewport(0, 0, window.width, window.height);
-		glClearColor(0.8f, 0.8f, 0.8f, 1.0f);
+		glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		glEnable(GL_DEPTH_TEST);
 		
-
-		Camera	reflectionCamera = camera;
-		reflectionCamera.orientation.y = -camera.orientation.y;
-		reflectionCamera.position.y = water.position.y - (camera.position.y - water.position.y);
-		reflectionCamera.updateMatrix();
-		
-		// ----- [ Terrain ] ----- //
 		terrain.noiseTexture->bind();
 		terrain.shader->enable();
 		terrain.shader->setInt("heightFactor", terrain.heightFactor);
 		terrain.shader->setVec3("lightPosition", lightPosition);
 		terrain.shader->setVec3("lightColor", lightColor);
-		terrain.draw(reflectionCamera, Vector4(0.0f, 1.0f, 0.0f, -water.position.y));
+		terrain.draw(camera);
+		terrain.noiseTexture->unbind();
+		
+		depthFBO.unbind();
+}
+
+
+void	Engine::_renderSceneForWater(Terrain& terrain, Water& water)
+{
+		/* ---------------------------- // Reflection // ---------------------------- */
+		water.reflectionFBO.bind();
+
+		glViewport(0, 0, window.width, window.height);
+		glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		glEnable(GL_DEPTH_TEST);
+		
+		Camera	reflectionCamera = camera;
+		reflectionCamera.orientation.y = -camera.orientation.y;
+		reflectionCamera.position.y = water.position.y - (camera.position.y - water.position.y);
+		reflectionCamera.updateMatrix();
+
+		terrain.noiseTexture->bind();
+		terrain.draw(reflectionCamera, Vector4(0.0f, 1.0f, 0.0f, -water.position.y + 1));
 		terrain.noiseTexture->unbind();
 		
 		water.reflectionFBO.unbind();
+
+		/* ---------------------------- // Refraction // ---------------------------- */
+		water.refractionFBO.bind();
+
+		glViewport(0, 0, window.width, window.height);
+		glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		glEnable(GL_DEPTH_TEST);
+
+		terrain.noiseTexture->bind();
+		terrain.draw(camera, Vector4(0.0f, -1.0f, 0.0f, water.position.y));
+		terrain.noiseTexture->unbind();
+		
+		water.refractionFBO.unbind();
 }
 
 void	Engine::_renderScene(Terrain& terrain, Water& water)
 {
 		glViewport(0, 0, window.width, window.height);
-		glClearColor(0.5f, 0.5f, 0.5f, 1.0f);
+		glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		glEnable(GL_DEPTH_TEST);
 		
@@ -179,20 +227,29 @@ void	Engine::_renderScene(Terrain& terrain, Water& water)
 		terrain.noiseTexture->bind();
 		terrain.draw(camera);
 		terrain.noiseTexture->unbind();
-;
+
 		// ------ [ Water ] ------ //
 		water.noiseTexture->bind();
 		water.reflectionTexture->bind();
+		water.refractionTexture->bind();
+		depthTexture->bind();
 
 		water.shader->enable();
+		water.shader->setVec3("color", water.color);
 		water.shader->setVec3("lightPosition", lightPosition);
 		water.shader->setVec3("lightColor", lightColor);
 		water.shader->setVec3("cameraPosition", camera.position);
+		water.shader->setFloat("height", water.position.y);
 		water.shader->setFloat("globalTime", glfwGetTime());
 		water.reflectionTexture->textureUnit(*(water.shader), "reflectionTexture", 1);
+		water.refractionTexture->textureUnit(*(water.shader), "refractionTexture", 2);
+		depthTexture->textureUnit(*(water.shader), "depthTexture", 3);
 		water.draw(camera);
-		water.reflectionTexture->unbind();
+		
 		water.noiseTexture->unbind();
+		water.reflectionTexture->unbind();
+		water.refractionTexture->unbind();
+		depthTexture->unbind();
 }
 
 /* ---------------------------------- Input --------------------------------- */
@@ -212,7 +269,8 @@ void	Engine::_displayFPS(void)
 	currentTime = glfwGetTime();
 	timeDifference = currentTime - previousTime;
 	counter++;
-	if (timeDifference >= 1.0 / 30.0)
+	/* Update window title once per second to avoid excessive OS calls */
+	if (timeDifference >= 1.0)
 	{
 		std::string	FPS = std::to_string((1.0 / timeDifference) * counter);
 		std::string	ms = std::to_string((timeDifference / counter) * 1000);
@@ -246,6 +304,10 @@ void	Engine::_renderUI(Terrain& terrain, Water& water)
 	ImGui::Text("Light");
 	ImGui::SliderFloat3("Direction", glm::value_ptr(lightPosition), -1, 1, "%.3f");
 	ImGui::ColorEdit3("Color", glm::value_ptr(lightColor));
+
+	ImGui::Text("Water");
+	ImGui::SliderFloat("Water Level", &water.position.y, 0.0f, 1000.0f, "%.1f");
+	ImGui::ColorEdit3("Water Color", glm::value_ptr(water.color));
 
 	ImGui::End();
 

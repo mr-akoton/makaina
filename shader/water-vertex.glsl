@@ -6,8 +6,10 @@ layout (location = 2) in vec3	l_color;
 layout (location = 3) in vec2	l_textureUV;
 
 uniform mat4		model;
+uniform vec3		color;
 uniform vec3		cameraPosition;
 uniform mat4		cameraMatrix;
+uniform float		height;
 uniform float		globalTime;
 
 uniform sampler2D	heightMap;
@@ -33,8 +35,8 @@ void	main()
 		1.0f
 	);
 
-	data_out.color = l_color;
+	data_out.color = color;
 	data_out.textureUV = l_textureUV;
-	data_out.projection = cameraMatrix;
 	data_out.cameraPosition = cameraPosition;
+	data_out.projection = cameraMatrix;
 }

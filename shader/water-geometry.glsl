@@ -13,7 +13,6 @@ in DATA
 
 out vec3	color;
 out	vec3	normal;
-out	vec3	currentPosition;
 out vec3	toCameraVector;
 
 
@@ -32,7 +31,6 @@ vec3	faceNormal = getNormal(
 
 	for (int i = 0; i < 3; i++)
 	{
-		currentPosition = gl_in[i].gl_Position.xyz;
 		gl_Position = data_in[i].projection * gl_in[i].gl_Position;
 		color = data_in[i].color;
 		normal = faceNormal;

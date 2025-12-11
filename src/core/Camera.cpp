@@ -27,7 +27,7 @@ Camera::Camera(int width, int height, Vector3 position):
 	farthest(1000.0f),
 	ratio((float)width / height),
 	speed(100.0f),
-	mouseSensitivity(1000.0f),
+	mouseSensitivity(30.0f),
 	up(0.0f, 1.0f, 0.0f),
 	position(position),
 	orientation(0.0f, 0.0f, 1.0f),
@@ -133,6 +133,7 @@ void	Camera::_handleKeyInput(Window& window, float deltaTime)
 
 void	Camera::_handleMouseInput(Window& window, float deltaTime)
 {
+	(void)deltaTime;
 	if (window.isButtonPressed(GLFW_MOUSE_BUTTON_1))
 	{
 		window.hideCursor();
@@ -148,8 +149,11 @@ void	Camera::_handleMouseInput(Window& window, float deltaTime)
 		Vector3	newOrientation;
 
 		window.getCursorPos(cursorx, cursory);
-		rotx = mouseSensitivity * (float)(cursory - (height / 2.0f)) / height * deltaTime;
-		roty = mouseSensitivity * (float)(cursorx - (width / 2.0f)) / width * deltaTime;
+		/* Mouse motion should be based on cursor delta, not multiplied by frame deltaTime.
+		 * Multiplying by deltaTime makes movement inversely dependent on FPS (slower at higher FPS).
+		 */
+		rotx = mouseSensitivity * (float)(cursory - (height / 2.0f)) / height;
+		roty = mouseSensitivity * (float)(cursorx - (width / 2.0f)) / width;
 
 		newOrientation = glm::rotate(
 			orientation,

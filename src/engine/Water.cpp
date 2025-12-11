@@ -33,27 +33,48 @@ Water::Water(
 
 Water::~Water()
 {
-	delete	reflectionTexture;
+	delete noiseTexture;
+	delete reflectionTexture;
+	delete refractionTexture;
 }
 
 /* ========================================================================== */
 /*                       REFLECTION AND REFRACTION LOGIC                      */
 /* ========================================================================== */
 
-void	Water::initReflection(Window& window)
+void	Water::initEffects(Window& window)
 {
+	// Reflection //
 	reflectionFBO.bind();
+	
 	reflectionTexture = new FramebufferTexture(window.width, window.height, 1, GL_RGB, GL_RGB, GL_FLOAT);
 	reflectionTexture->setFilter(GL_LINEAR);
 	reflectionFBO.attachTexture(*reflectionTexture, GL_COLOR_ATTACHMENT0);
-	
-	reflectionRBO.bind();
-	reflectionRBO.setStorage(window.width, window.height);
-	reflectionRBO.unbind();
-	reflectionFBO.attachRenderbuffer(reflectionRBO);
+
+	reflectionDepthTexture = new FramebufferTexture(window.width, window.height, 0, GL_DEPTH_COMPONENT, GL_DEPTH_COMPONENT, GL_FLOAT);
+	reflectionDepthTexture->setFilter(GL_NEAREST);
+	reflectionDepthTexture->setWrap(GL_CLAMP_TO_BORDER);
+	reflectionDepthTexture->setWrapBorderColor(Vector4(0.0f));
+	reflectionFBO.attachTexture(*reflectionDepthTexture, GL_DEPTH_ATTACHMENT);
 
 	reflectionFBO.checkAttachements();
 	reflectionFBO.unbind();
+
+	// Refraction //
+	refractionFBO.bind();
+
+	refractionTexture = new FramebufferTexture(window.width, window.height, 2, GL_RGB, GL_RGB, GL_FLOAT);
+	refractionTexture->setFilter(GL_LINEAR);
+	refractionFBO.attachTexture(*refractionTexture, GL_COLOR_ATTACHMENT0);
+
+	refractionDepthTexture = new FramebufferTexture(window.width, window.height, 0, GL_DEPTH_COMPONENT, GL_DEPTH_COMPONENT, GL_FLOAT);
+	refractionDepthTexture->setFilter(GL_NEAREST);
+	refractionDepthTexture->setWrap(GL_CLAMP_TO_BORDER);
+	refractionDepthTexture->setWrapBorderColor(Vector4(0.0f));
+	refractionFBO.attachTexture(*refractionDepthTexture, GL_DEPTH_ATTACHMENT);
+
+	refractionFBO.checkAttachements();
+	refractionFBO.unbind();
 }
 
 /* ========================================================================== */

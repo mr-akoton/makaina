@@ -23,6 +23,7 @@ class	Window
 		int		init(unsigned int width, unsigned int height, const char* title);
 		void	close(void) const;
 		void	update(void) const;
+		void	pollEvents(void) const;
 		void	destroy(void);
 
 		bool	shouldClose(void) const;

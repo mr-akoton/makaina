@@ -61,6 +61,10 @@ void	Window::close(void) const
 void	Window::update(void) const
 {
 	glfwSwapBuffers(_id);
+}
+
+void	Window::pollEvents(void) const
+{
 	glfwPollEvents();
 }
 

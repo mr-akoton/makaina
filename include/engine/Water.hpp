@@ -29,10 +29,13 @@ class	Water
 		Shader*			shader;
 
 		FBO					reflectionFBO;
-		RBO					reflectionRBO;
+		FBO					refractionFBO;
 
 		NoiseTexture*		noiseTexture = nullptr;
+		FramebufferTexture*	reflectionDepthTexture = nullptr;
+		FramebufferTexture*	refractionDepthTexture = nullptr;
 		FramebufferTexture*	reflectionTexture = nullptr;
+		FramebufferTexture*	refractionTexture = nullptr;
 
 	public	:
 		Water(
@@ -60,7 +63,7 @@ class	Water
 
 		void	setShader(Shader* shader);
 
-		void	initReflection(Window& window);
+		void	initEffects(Window& window);
 
 		void	draw(Camera& camera);
 };

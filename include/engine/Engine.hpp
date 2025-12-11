@@ -34,6 +34,8 @@ class	Engine
 		double			timeDifference;
 		unsigned int	counter;
 
+		FramebufferTexture*	depthTexture = nullptr;
+
 	public	:
 		Engine(
 			unsigned int	windowWidth,
@@ -54,6 +56,7 @@ class	Engine
 		void	_handleInput(void);
 		void	_renderUI(Terrain& terrain, Water& water);
 
+		void	_renderDepth(Terrain& terrain, Water& water, FBO& depthFBO);
 		void	_renderScene(Terrain& terrain, Water& water);
 		void	_renderSceneForWater(Terrain& terrain, Water& water);
 

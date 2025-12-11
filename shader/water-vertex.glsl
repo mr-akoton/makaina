@@ -19,18 +19,22 @@ out DATA
 	vec2	textureUV;
 	vec3	color;
 	vec3	cameraPosition;
+	vec4	gridPosition;
 	mat4	projection;
 }	data_out;
+
 
 
 void	main()
 {
 	float	noiseValue = texture(heightMap, l_textureUV).r;
-	float	wave = cos(-20.0f * noiseValue + globalTime) * 1.0f;
+	float	wave = cos(10.0f * noiseValue + globalTime)
+				 * sin(10.0f * noiseValue + globalTime)
+				 * 1.0f;
 	
 	gl_Position = model * vec4(
 		l_position.x,
-		l_position.y + wave,
+		l_position.y + wave - 1.0f,
 		l_position.z,
 		1.0f
 	);
@@ -38,5 +42,6 @@ void	main()
 	data_out.color = color;
 	data_out.textureUV = l_textureUV;
 	data_out.cameraPosition = cameraPosition;
+	data_out.gridPosition = cameraMatrix * model * vec4(l_position, 1.0f);
 	data_out.projection = cameraMatrix;
 }

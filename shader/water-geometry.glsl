@@ -8,12 +8,16 @@ in DATA
 	vec2	textureUV;
 	vec3	color;
 	vec3	cameraPosition;
+	vec4	gridPosition;
 	mat4	projection;
 }	data_in[];
 
 out vec3	color;
 out	vec3	normal;
 out vec3	toCameraVector;
+out vec4	gridPosition;
+out vec4	realPosition;
+
 
 
 vec3	getNormal(vec3 point1, vec3 point2, vec3 point3)
@@ -32,9 +36,11 @@ vec3	faceNormal = getNormal(
 	for (int i = 0; i < 3; i++)
 	{
 		gl_Position = data_in[i].projection * gl_in[i].gl_Position;
+		realPosition = gl_Position;
 		color = data_in[i].color;
 		normal = faceNormal;
 		toCameraVector = normalize(data_in[i].cameraPosition - gl_in[i].gl_Position.xyz);
+		gridPosition = data_in[i].gridPosition;
 		EmitVertex();
 	}
 

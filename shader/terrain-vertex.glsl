@@ -23,7 +23,7 @@ out DATA
 void	main()
 {
 	float	noiseValue = texture(heightMap, l_textureUV).r;
-	float	height = pow(noiseValue, 8) * heightFactor;
+	float	height = pow(noiseValue, 4) * heightFactor;
 	vec4	currentPosition = vec4(l_position.x, height, l_position.z, 1.0f);
 
 	gl_ClipDistance[0] = dot(currentPosition, clipPlane);

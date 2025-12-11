@@ -107,7 +107,7 @@ void	Engine::run(void)
 
 	/* ---------------------------- // Water setup // --------------------------- */
 
-	Water	water(terrainSize, terrainSize, 1, Vector3(0.0f, 40.0f, 0.0f));
+	Water	water(terrainSize, terrainSize, 1, Vector3(0.0f, 25.0f, 0.0f));
 	water.setShader(&waterShader);
 	water.setNoiseType(FastNoiseLite::NoiseType_Perlin);
 	water.setNoiseFrequency(0.003f);
@@ -196,7 +196,7 @@ void	Engine::_renderSceneForWater(Terrain& terrain, Water& water)
 		reflectionCamera.updateMatrix();
 
 		terrain.noiseTexture->bind();
-		terrain.draw(reflectionCamera, Vector4(0.0f, 1.0f, 0.0f, -water.position.y + 1));
+		terrain.draw(reflectionCamera, Vector4(0.0f, 1.0f, 0.0f, -water.position.y));
 		terrain.noiseTexture->unbind();
 		
 		water.reflectionFBO.unbind();

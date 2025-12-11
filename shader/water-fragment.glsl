@@ -11,6 +11,8 @@ uniform sampler2D   depthTexture;
 in vec3	color;
 in vec3	normal;
 in vec3 toCameraVector;
+in vec4 gridPosition;
+in vec4 realPosition;
 
 out vec4	FragColor;
 
@@ -24,6 +26,12 @@ float   toLinearDepth(float depth)
     float   far = 1000.0f;
 
     return 2.0f * near * far / (far + near - (2.0f * depth - 1.0f) * (far - near));
+}
+
+vec2    projectToPlane(vec4 point)
+{
+    vec2    ndc = point.xy / point.w;
+    return clamp(ndc * 0.5f + 0.5f, 0.002f, 0.998f);
 }
 
 float   getWaterDepth(vec2 textureUV)
@@ -78,9 +86,10 @@ vec4    getLight(vec2 textureUV, float waterDepth)
 
 void    main()
 {
-    vec2    screenUV = gl_FragCoord.xy / textureSize(reflectionTexture, 0);
-    float   waterDepth = getWaterDepth(screenUV);
+    vec2    textureUVGrid = projectToPlane(gridPosition);
+    vec2    textureUVReal = projectToPlane(realPosition);
+    float   waterDepth = getWaterDepth(textureUVReal);
 
-    FragColor = getLight(screenUV, waterDepth);
+    FragColor = getLight(textureUVGrid, waterDepth);
     FragColor.a = clamp(waterDepth / 1.0f, 0.0f, 1.0f);
 }

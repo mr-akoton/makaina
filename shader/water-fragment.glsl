@@ -1,95 +1,35 @@
 #version 330 core
 
-const float  LIGHT_AMBIENT = 0.1f; 
+const float AMBIEN_LIGHT = 0.1f;
+const float SPECULAR_STRENGTH = 0.5f;
 
-uniform vec3	    lightPosition;
-uniform vec3	    lightColor;
-uniform sampler2D   reflectionTexture;
-uniform sampler2D   refractionTexture;
-uniform sampler2D   depthTexture;
+uniform vec3	u_viewPosition;	
+uniform vec3	u_lightPosition;
+uniform vec3	u_lightColor;
 
-in vec3	color;
-in vec3	normal;
-in vec3 toCameraVector;
-in vec4 gridPosition;
-in vec4 realPosition;
+in vec3 pass_color;
+in vec3 pass_normal;
 
 out vec4	FragColor;
 
 /* ========================================================================== */
-/*                                    UTILS                                   */
+/*                                    LIGHT                                   */
 /* ========================================================================== */
 
-float   toLinearDepth(float depth)
+vec4	getLight()
 {
-    float   near = 0.1f;
-    float   far = 1000.0f;
+    vec3	normal = normalize(pass_normal);
+    vec3	lightDirection = normalize(-u_lightPosition);
+    float	diffuse = max(dot(normal, lightDirection), 0.0);
 
-    return 2.0f * near * far / (far + near - (2.0f * depth - 1.0f) * (far - near));
-}
-
-vec2    projectToPlane(vec4 point)
-{
-    vec2    ndc = point.xy / point.w;
-    return clamp(ndc * 0.5f + 0.5f, 0.002f, 0.998f);
-}
-
-float   getWaterDepth(vec2 textureUV)
-{
-    float   depth = texture(depthTexture, textureUV).r;
-    float   floorDistance = toLinearDepth(depth);
-    depth = gl_FragCoord.z;
-    float   waterDistance = toLinearDepth(depth);
-    return floorDistance - waterDistance;
-}
-
-vec3    getMurkiness(vec3 refractionColor, float waterDepth)
-{
-    float murkyFactor = smoothstep(0, 15, waterDepth);
-    float murkiness = 0.4 + murkyFactor * (0.75 - 0.4);
-    return mix(refractionColor, color, murkiness);
-}
-
-float   getFresnel()
-{
-    vec3   viewVector = normalize(toCameraVector);
-    vec3   norm = normalize(normal); 
-    float   refractiveFactor = dot(viewVector, norm);
-    return clamp(pow(refractiveFactor, 0.9f), 0.0f, 1.0f);
-}
-
-/* ========================================================================== */
-/*                               LIGHT AND COLOR                              */
-/* ========================================================================== */
-
-vec3    getColor(vec2 textureUV, float waterDepth)
-{
-    vec3    refractionColor = texture(refractionTexture, textureUV).rgb;
-    refractionColor = getMurkiness(refractionColor, waterDepth);
-    vec3    reflectionColor = texture(reflectionTexture, vec2(textureUV.x, 1.0f - textureUV.y)).rgb;
-
-    return mix(reflectionColor, refractionColor, getFresnel());
-}
-
-vec4    getLight(vec2 textureUV, float waterDepth)
-{
-    vec3    norm = normalize(normal);
-    vec3    lightDirection = normalize(-lightPosition);
-    float   diffuse = max(dot(norm, lightDirection), 0.0f);
-
-    return vec4(getColor(textureUV, waterDepth) * lightColor * (LIGHT_AMBIENT + diffuse), 1.0f);
+    return vec4(pass_color * u_lightColor * (AMBIEN_LIGHT + diffuse), 1.0f);
 }
 
 /* ========================================================================== */
 /*                                    MAIN                                    */
 /* ========================================================================== */
 
-void    main()
+void main()
 {
-    vec2    textureUVGrid = projectToPlane(gridPosition);
-    vec2    textureUVReal = projectToPlane(realPosition);
-    float   waterDepth = getWaterDepth(textureUVReal);
-
-    FragColor = getLight(textureUVGrid, waterDepth);
-    FragColor.a = clamp(waterDepth / 1.0f, 0.0f, 1.0f);
+	FragColor = getLight();
 }

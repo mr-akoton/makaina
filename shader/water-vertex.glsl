@@ -5,43 +5,23 @@ layout (location = 1) in vec3	l_normal;
 layout (location = 2) in vec3	l_color;
 layout (location = 3) in vec2	l_textureUV;
 
-uniform mat4		model;
-uniform vec3		color;
-uniform vec3		cameraPosition;
-uniform mat4		cameraMatrix;
-uniform float		height;
-uniform float		globalTime;
+uniform mat4	u_model;
+uniform mat4	u_projection;
 
-uniform sampler2D	heightMap;
+out vec3	pass_color;
+out vec3	pass_normal;
+out vec3	pass_vertexPosition;
 
-out DATA
-{
-	vec2	textureUV;
-	vec3	color;
-	vec3	cameraPosition;
-	vec4	gridPosition;
-	mat4	projection;
-}	data_out;
-
-
+/* ========================================================================== */
+/*                                    MAIN                                    */
+/* ========================================================================== */
 
 void	main()
 {
-	float	noiseValue = texture(heightMap, l_textureUV).r;
-	float	wave = cos(10.0f * noiseValue + globalTime)
-				 * sin(10.0f * noiseValue + globalTime)
-				 * 1.0f;
-	
-	gl_Position = model * vec4(
-		l_position.x,
-		l_position.y + wave - 1.0f,
-		l_position.z,
-		1.0f
-	);
+	vec4	vertexPosition = u_model * vec4(l_position, 1.0f);
 
-	data_out.color = color;
-	data_out.textureUV = l_textureUV;
-	data_out.cameraPosition = cameraPosition;
-	data_out.gridPosition = cameraMatrix * model * vec4(l_position, 1.0f);
-	data_out.projection = cameraMatrix;
+	gl_Position = u_projection * u_model * vertexPosition;
+	pass_color = l_color;
+	pass_normal = l_normal;
+	pass_vertexPosition = pass_vertexPosition.xyz;
 }

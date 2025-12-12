@@ -16,49 +16,40 @@
 class	Terrain
 {
 	public	:
-		unsigned int	width;
-		unsigned int	height;
-		unsigned int	gridSize;
-
-		FlatMesh		mesh;
-		FastNoiseLite	noise;
-		NoiseTexture	*noiseTexture;
-
-		int			heightFactor;
+		int 		width;
+		int			height;
+		int			heightScale;
+		int			gridSize;
+		
+		Shader&		shader;
+		
+		FlatMesh	mesh;
 		Vector3		position;
+		Vector3		color;
 		Matrix4		model;
+		
+		FastNoiseLite	noise;
+		NoiseTexture*	heightMap = nullptr;
 
-		Shader		*shader = nullptr;
-	
 	public	:
 		Terrain(
-			unsigned int	width,
-			unsigned int	height,
-			unsigned int	gridSize,
-			Vector3			position
+			int		width,
+			int		height,
+			int		gridSize,
+			Shader&	shader,
+			Vector3	position = Vector3(0.0f),
+			Vector3	color = Vector3(1.0f)
 		);
 		~Terrain();
 
-		void	initNoiseTexture(unsigned int width, unsigned int height);
+		void	setNoiseTexture(int textureWidth, int textureHeight);
 		void	setNoiseType(FastNoiseLite::NoiseType type);
-		void	setNoiseFrequency(float value);
+		void	setNoiseFrequency(float frequency);
 		void	setNoiseFractalType(FastNoiseLite::FractalType type);
-		void	setNoiseFractalParameters(
-			int		octaves,
-			float	lacunarity,
-			float	gain
-		);
-		void	setNoiseTextureUV(
-			unsigned int	noiseWidth,
-			unsigned int	noiseHeight
-		);
-
-		void	setShader(Shader* shader);
-
-		void	draw(
-			Camera&	camera, 
-			Vector4	clipPlane = Vector4(0.0f)
-		);
+		void	setNoiseFractalOctaves(int octaves);
+		void	setNoiseFractalLacunarity(float lacunarity);
+		void	setNoiseFractalGain(float gain);
+		void	draw(Camera& camera);
 };
 
 #endif /* TERRAIN_HPP ======================================================= */

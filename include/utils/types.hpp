@@ -7,10 +7,18 @@
 /*                                  CONSTANT                                  */
 /* ========================================================================== */
 
-enum FunctionReturn
+enum	FunctionReturn
 {
 	failure	= -1,
 	success	=  0,
+};
+
+enum	TextureLayer
+{
+	NOISE_LAYER = 0,
+	WATER_REFLECTION_LAYER,
+	WATER_REFRACTION_LAYER,
+	DEPTH_LAYER,
 };
 
 /* ========================================================================== */

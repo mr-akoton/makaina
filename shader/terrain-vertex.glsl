@@ -1,35 +1,41 @@
 #version 330 core
 
+
 layout (location = 0) in vec3	l_position;
 layout (location = 1) in vec3	l_normal;
 layout (location = 2) in vec3	l_color;
 layout (location = 3) in vec2	l_textureUV;
 
-uniform mat4		model;
-uniform mat4		cameraMatrix;
-uniform	vec4		clipPlane;
+uniform mat4		u_model;
+uniform mat4		u_projection;
+uniform sampler2D	u_heightMap;
+uniform int			u_heightScale;
 
-uniform int			heightFactor;
-uniform sampler2D	heightMap;
+out vec3	pass_color;
+out vec3	pass_normal;
+out	vec3	pass_vertexPosition;
 
-out DATA
+/* ========================================================================== */
+/*                                    MAIN                                    */
+/* ========================================================================== */
+
+float	getHeight(vec2 coord)
 {
-	vec3	color;
-	vec2	textureUV;
-	mat4	projection;
-	float	clipDistance;
-}	data_out;
+	return texture(u_heightMap, coord).r;
+}
 
 void	main()
 {
-	float	noiseValue = texture(heightMap, l_textureUV).r;
-	float	height = pow(noiseValue, 4) * heightFactor;
-	vec4	currentPosition = vec4(l_position.x, height, l_position.z, 1.0f);
+	float	height = pow(getHeight(l_textureUV), 8);
+	vec4	vertexPosition = u_model * vec4(
+		l_position.x,
+		height * u_heightScale,
+		l_position.z,
+		1.0f
+	);
 
-	gl_ClipDistance[0] = dot(currentPosition, clipPlane);
-	gl_Position = model * currentPosition;
-	data_out.color = l_color;
-	data_out.textureUV = l_textureUV;
-	data_out.projection = cameraMatrix;
-	data_out.clipDistance = gl_ClipDistance[0];
+	gl_Position = u_projection * vertexPosition;
+	pass_color = l_color;
+	pass_normal = l_normal;
+	pass_vertexPosition = vertexPosition.xyz;
 }

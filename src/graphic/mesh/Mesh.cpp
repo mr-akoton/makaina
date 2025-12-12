@@ -71,8 +71,8 @@ void	Mesh::draw(Shader& shader, Camera& camera, const char* renderType)
 		textures[i].bind();
 	}
 
-	shader.setVec3("cameraPosition", camera.position);
-	camera.updateShaderMatrix(shader, "cameraMatrix");
+	shader.setVec3("u_viewPosition", camera.position);
+	camera.updateShaderMatrix(shader, "u_projection");
 
 	if (std::string(renderType) == "element")
 	{

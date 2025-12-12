@@ -64,7 +64,6 @@ GRP_FILES	:= texture/ATexture.cpp \
 			   texture/NoiseTexture.cpp \
 			   texture/Texture.cpp \
 			   mesh/FlatMesh.cpp \
-			   mesh/ScreenMesh.cpp \
 			   mesh/Mesh.cpp \
 
 USI_FILES	:= Interface.cpp \

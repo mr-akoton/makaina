@@ -1,23 +1,26 @@
 #include <engine/Terrain.hpp>
-
 #include <iostream>
 
 /* ========================================================================== */
-/*                                 CONSTRUCTOR                                */
+/*                         CONSTRUCTOR AND DESTRUCTOR                         */
 /* ========================================================================== */
 
 Terrain::Terrain(
-	unsigned int	width,
-	unsigned int	height,
-	unsigned int	gridSize,
-	Vector3			position = Vector3(0.0f)
+	int		width,
+	int		height,
+	int		gridSize,
+	Shader&	shader,
+	Vector3	position,
+	Vector3	color
 ):
 	width(width),
 	height(height),
+	heightScale(500.0f),
 	gridSize(gridSize),
+	shader(shader),
 	mesh(width, height, gridSize),
-	heightFactor(250),
 	position(position),
+	color(color),
 	model(1.0f)
 {
 	model = glm::translate(model, position);
@@ -25,22 +28,42 @@ Terrain::Terrain(
 
 Terrain::~Terrain()
 {
-	delete noiseTexture;
+	delete heightMap;
 }
-
 
 /* ========================================================================== */
 /*                                   METHOD                                   */
 /* ========================================================================== */
 
-void	Terrain::initNoiseTexture(unsigned int width, unsigned int height)
+/* ------------------------------ Noise Methods ----------------------------- */
+
+void	Terrain::setNoiseTexture(int textureWidth, int textureHeight)
 {
-	noiseTexture = new NoiseTexture(noise, width, height, 0, GL_RED, GL_FLOAT);
-	
-	if (this->shader != nullptr)
+	delete heightMap;
+
+	heightMap = new NoiseTexture(
+		noise,
+		textureWidth,
+		textureHeight,
+		NOISE_LAYER,
+		GL_RED,
+		GL_FLOAT
+	);
+
+	for (int y = 0; y < width; y++)
 	{
-		noiseTexture->textureUnit(*shader, "heightMap", 0);
+		for (int x = 0; x < height; x++)
+		{
+			int	i = (y * width) + x;
+
+			mesh.vertices[i].textureUV = Vector2(
+				static_cast<float>(x) / (textureWidth - 1),
+				static_cast<float>(y) / (textureHeight - 1)
+			);
+		}
 	}
+
+	mesh._assignBuffer();
 }
 
 void	Terrain::setNoiseType(FastNoiseLite::NoiseType type)
@@ -58,59 +81,33 @@ void	Terrain::setNoiseFractalType(FastNoiseLite::FractalType type)
 	noise.SetFractalType(type);
 }
 
-void	Terrain::setNoiseFractalParameters(
-	int		octaves,
-	float	lacunarity,
-	float	gain
-)
+void	Terrain::setNoiseFractalOctaves(int octaves)
 {
 	noise.SetFractalOctaves(octaves);
+}
+
+void	Terrain::setNoiseFractalLacunarity(float lacunarity)
+{
 	noise.SetFractalLacunarity(lacunarity);
+}
+
+void	Terrain::setNoiseFractalGain(float gain)
+{
 	noise.SetFractalGain(gain);
 }
 
-void	Terrain::setNoiseTextureUV(
-	unsigned int	noiseWidth,
-	unsigned int	noiseHeight
-)
+/* ------------------------------ Draw Methods ------------------------------ */
+
+void	Terrain::draw(Camera& camera)
 {
-	for (unsigned int z = 0; z < height; z++)
+	shader.enable();
+	shader.setMat4("u_model", model);
+	
+	if (heightMap != nullptr)
 	{
-		for (unsigned int x = 0; x < width; x++)
-		{
-			unsigned int	i = (z * width) + x;
-			
-			mesh.vertices[i].textureUV = Vector2(
-				static_cast<float>(x) / (noiseWidth - 1),
-				static_cast<float>(z) / (noiseHeight - 1)
-			);
-		}
+		heightMap->bind();
+		heightMap->textureUnit(shader, "u_heightMap", NOISE_LAYER);
 	}
-
-	mesh._assignBuffer();
-}
-
-void	Terrain::setShader(Shader* shader)
-{
-	this->shader = shader;
-}
-
-
-void	Terrain::draw(Camera& camera, Vector4 clipPlane)
-{
-	if (shader != nullptr)
-	{
-		shader->enable();
-		shader->setMat4("model", model);
-		shader->setVec4("clipPlane", clipPlane);
-		camera.updateShaderMatrix(*shader, "cameraMatrix");
-		
-		glEnable(GL_CLIP_DISTANCE0);
-		mesh.draw(*shader, camera);
-		glDisable(GL_CLIP_DISTANCE0);
-	}
-	else
-	{
-		std::cerr << "Warning: no shader was assign for this draw call" << std::endl;
-	}
+	
+	mesh.draw(shader, camera);
 }

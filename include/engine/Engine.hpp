@@ -58,7 +58,6 @@ class	Engine
 
 		void	_renderDepth(Terrain& terrain, Water& water, FBO& depthFBO);
 		void	_renderScene(Terrain& terrain, Water& water);
-		void	_renderSceneForWater(Terrain& terrain, Water& water);
 
 	public	:
 		class	WindowInitFailedException: std::exception

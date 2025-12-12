@@ -99,7 +99,7 @@ void	Engine::run(void)
 	terrain.setNoiseFractalGain(0.4f);
 	terrain.setNoiseTexture(1000, 1000);
 
-	Water water;
+	Water water(499, 499, 1.0f, waterShader, Vector3(0.0f, 15.0f, 0.0f));
 
 	/* -------------------------------- MAIN LOOP ------------------------------- */
 
@@ -127,6 +127,11 @@ void	Engine::run(void)
 		terrainShader.setVec3("u_lightPosition", lightPosition);
 		terrainShader.setVec3("u_lightColor", lightColor);
 		terrain.draw(camera);
+
+		waterShader.enable();
+		waterShader.setVec3("u_lightPosition", lightPosition);
+		waterShader.setVec3("u_lightColor", lightColor);
+		water.draw(camera);
 
 		_renderUI(terrain, water);
 

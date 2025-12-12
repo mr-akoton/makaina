@@ -24,6 +24,13 @@ Terrain::Terrain(
 	model(1.0f)
 {
 	model = glm::translate(model, position);
+
+	for (Vertex& vertex: mesh.vertices)
+	{
+		vertex.color = color;
+	}
+
+	mesh._assignBuffer();
 }
 
 Terrain::~Terrain()

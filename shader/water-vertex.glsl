@@ -20,7 +20,7 @@ void	main()
 {
 	vec4	vertexPosition = u_model * vec4(l_position, 1.0f);
 
-	gl_Position = u_projection * u_model * vertexPosition;
+	gl_Position = u_projection * vertexPosition;
 	pass_color = l_color;
 	pass_normal = l_normal;
 	pass_vertexPosition = pass_vertexPosition.xyz;

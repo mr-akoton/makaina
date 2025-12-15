@@ -1,15 +1,12 @@
-#include <core/Window.hpp>
-#include <utils/types.hpp>
-
-#include <imgui_impl_glfw.h>
-
-static void frameBufferSizeCallback(GLFWwindow* , int width, int height);
+# include <core/Window.hpp>
+# include <util/types.hpp>
 
 /* ========================================================================== */
 /*                         CONSTRUCTOR AND DESTRUCTOR                         */
 /* ========================================================================== */
 
 Window::Window(void):
+	_isInitialized(false),
 	_id(nullptr),
 	width(0),
 	height(0)
@@ -17,72 +14,18 @@ Window::Window(void):
 	/* Do nothing */
 }
 
-Window::~Window(void)
+Window::~Window()
 {
 	this->destroy();
 }
 
 /* ========================================================================== */
-/*                                   METHOD                                   */
+/*                                   GETTER                                   */
 /* ========================================================================== */
 
-/* --------------------------------- State ---------------------------------- */
-
-int	Window::init(unsigned int width, unsigned int height, const char* title)
+bool	Window::isOpen(void) const
 {
-	this->width = width;
-	this->height = height;
-	
-	_id = glfwCreateWindow(width, height, title, nullptr, nullptr);
-	if (_id == nullptr)
-	{
-		return failure;
-	}
-
-	glfwMakeContextCurrent(_id);
-	glfwSetFramebufferSizeCallback(_id, frameBufferSizeCallback);
-
-	if (glfwRawMouseMotionSupported())
-	{
-		glfwSetInputMode(_id, GLFW_RAW_MOUSE_MOTION, GLFW_TRUE);
-	}
-
-	return success;
-}
-
-void	Window::close(void) const
-{
-	if (not glfwWindowShouldClose(_id))
-	{
-		glfwSetWindowShouldClose(_id, true);
-	}
-}
-
-void	Window::update(void) const
-{
-	glfwSwapBuffers(_id);
-}
-
-void	Window::pollEvents(void) const
-{
-	glfwPollEvents();
-}
-
-void	Window::destroy(void)
-{
-	if (_id != nullptr)
-	{
-		glfwDestroyWindow(_id);
-		_id = nullptr;
-	}
-}
-
-
-/* -------------------------------- Checker --------------------------------- */
-
-bool	Window::shouldClose(void) const
-{
-	return glfwWindowShouldClose(_id);
+	return not glfwWindowShouldClose(_id);
 }
 
 bool	Window::isKeyPressed(int key) const
@@ -105,21 +48,18 @@ bool	Window::isButtonReleased(int button) const
 	return glfwGetMouseButton(_id, button) == GLFW_RELEASE;
 }
 
-/* --------------------------------- Cursor --------------------------------- */
-
-void	Window::setCursorPos(double x, double y) const
-{
-	glfwSetCursorPos(_id, x, y);
-}
-
-void	Window::getCursorPos(double& x, double& y) const
+void	Window::getCursorPosition(double& x, double& y) const
 {
 	glfwGetCursorPos(_id, &x, &y);
 }
 
-void	Window::setWindowTitle(const std::string& title) const
+/* ========================================================================== */
+/*                                   SETTER                                   */
+/* ========================================================================== */
+
+void	Window::setCursorPosition(double x, double y) const
 {
-	glfwSetWindowTitle(_id, title.c_str());
+	glfwSetCursorPos(_id, x, y);
 }
 
 void	Window::hideCursor(void) const
@@ -132,18 +72,62 @@ void	Window::resetCursor(void) const
 	glfwSetInputMode(_id, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
 }
 
-/* ---------------------------------- ImGui --------------------------------- */
-
-void	Window::initImGui(void) const
-{
-	ImGui_ImplGlfw_InitForOpenGL(_id, true);
-}
-
 /* ========================================================================== */
-/*                                  UTILITY                                   */
+/*                                    STATE                                   */
 /* ========================================================================== */
 
 static void frameBufferSizeCallback(GLFWwindow* , int width, int height)
 {
-	glViewport(0, 0, width, height);
+    glViewport(0, 0, width, height);
+}
+
+int	Window::init(GLuint width, GLuint height, const char* title)
+{
+	// Avoid any second call
+	if (_isInitialized) return success;
+
+	this->width = width;
+	this->height = height;
+
+	_id = glfwCreateWindow(width, height, title, nullptr, nullptr);
+	if (_id == nullptr) return failure;
+
+    glfwMakeContextCurrent(_id);
+    glfwSetFramebufferSizeCallback(_id, frameBufferSizeCallback);
+	if (glfwRawMouseMotionSupported())
+		glfwSetInputMode(_id, GLFW_RAW_MOUSE_MOTION, GLFW_TRUE);
+
+	_isInitialized = true;
+	return success;
+}
+
+void	Window::update(void) const
+{
+	glfwSwapBuffers(_id);
+}
+
+void	Window::pollEvents(void) const
+{
+	glfwPollEvents();
+}
+
+void	Window::clear(Color3 color, GLbitfield mask)
+{
+	glClearColor(color.r, color.g, color.b, 1.0f);
+	glClear(mask);
+}
+
+void	Window::close(void) const
+{
+	if (not glfwWindowShouldClose(_id))
+		glfwSetWindowShouldClose(_id, true);
+}
+
+void	Window::destroy(void)
+{
+	if (_id != nullptr)
+	{
+		glfwDestroyWindow(_id);
+		_id = nullptr;
+	}
 }

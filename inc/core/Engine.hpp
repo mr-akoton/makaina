@@ -1,6 +1,10 @@
 #ifndef ENGINE_HPP
 # define ENGINE_HPP
 
+#ifndef GLM_ENABLE_EXPERIMENTAL
+# define GLM_ENABLE_EXPERIMENTAL
+#endif
+
 # include <imgui/imgui.h>
 # include <imgui/imgui_impl_glfw.h>
 # include <imgui/imgui_impl_opengl3.h>
@@ -13,15 +17,16 @@
 # include <exception>
 # include <string>
 
-constexpr GLuint		WINDOW_WIDTH = 1080;
-constexpr GLuint		WINDOW_HEIGHT = 720;
-constexpr std::string	WINDOW_TITLE = "Makaina";
+constexpr GLuint			WINDOW_WIDTH = 1080;
+constexpr GLuint			WINDOW_HEIGHT = 720;
+constexpr std::string_view	WINDOW_TITLE = "Makaina";
 
 
 class	Engine
 {
 	private	:
 		Window	_window;
+
 
 	public	:
 		Engine(void);
@@ -31,6 +36,7 @@ class	Engine
 
 	private	:
 		void	_input(void) const;
+
 
 	public	:
 		class	WindowInitFailedException: public std::exception {

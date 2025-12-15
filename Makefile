@@ -17,7 +17,7 @@ CC			= gcc
 CFLAGS		= $(INCLUDES)
 
 CXX			= g++
-CXXFLAGS	= -Wall -Wextra -Werror -Wpedantic -O0 -std=c++23 -g \
+CXXFLAGS	= -Wall -Wextra -Werror -Wpedantic -O0 -std=c++17 -g \
 			  $(INCLUDES)
 LDFLAGS		= -lglfw -lGL -lX11 -lpthread -lXrandr -lXi -ldl
 
@@ -35,13 +35,17 @@ EXT_CXX		= imgui/imgui.cpp \
 			  imgui/imgui_widgets.cpp \
 			  stb/stb_image.cpp
 
-SRC			= core/Engine.cpp \
+SRC			= core/object/EBO.cpp \
+			  core/object/VAO.cpp \
+			  core/object/VBO.cpp \
+			  core/Engine.cpp \
 			  core/Window.cpp \
+			  util/iomanip.cpp \
 			  main.cpp
 
 OBJ			= $(addprefix $(SRC_DIR)/, $(SRC:.cpp=.o)) \
+			  $(addprefix $(EXT_DIR)/, $(EXT_C:.c=.o)) \
 			  $(addprefix $(EXT_DIR)/, $(EXT_CXX:.cpp=.o)) \
-			  $(addprefix $(EXT_DIR)/, $(EXT_C:.c=.o))
 
 # ============================================================================ #
 # RULES

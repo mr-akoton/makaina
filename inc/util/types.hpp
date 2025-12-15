@@ -3,11 +3,17 @@
 
 # include <glm/glm.hpp>
 
+# include <vector>
+
+/* -------------------------------- Enumerate ------------------------------- */
+
 enum FunctionReturn
 {
 	failure = -1,
 	success = 0
 };
+
+/* -------------------------------- Variable -------------------------------- */
 
 typedef glm::vec4	Vector2;
 typedef glm::vec3	Vector3;
@@ -20,5 +26,23 @@ typedef glm::mat3	Matrix3;
 typedef glm::mat4	Matrix4;
 typedef glm::vec3	Color3;
 typedef glm::vec4	Color4;
+
+struct Vertex
+{
+	Vector3	position;
+	Vector3 normal;
+	Color3	color;
+	Vector2	textureUV;
+};
+
+struct VertexFlat
+{
+	Vector3 position;
+	Vector2	noiseUV;
+};
+
+typedef std::vector<Vertex>		VertexList;
+typedef std::vector<VertexFlat>	VertexFlatList;
+typedef std::vector<GLuint>		IndicesList;
 
 #endif /* TYPES_HPP ========================================================= */

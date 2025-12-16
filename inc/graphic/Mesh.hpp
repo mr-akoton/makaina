@@ -18,6 +18,10 @@ class	Mesh
 		IndiceList	_indices;
 	
 	public		:
+		Mesh(void);
+		Mesh(IndiceList& indices);
+		~Mesh();
+
 		void			draw(Shader& shader, Camera& camera);
 		virtual void	assignBuffer(void) = 0;
 };
@@ -26,17 +30,15 @@ class	Mesh
 /*                                STANDARD MESH                               */
 /* ========================================================================== */
 
-class	StandardMesh: public Mesh
+class	MeshBasic: public Mesh
 {
 	private	:
 		VertexList	_vertices;
 
 	public	:
-		StandardMesh(void);
-		StandardMesh(VertexList& vertices, IndiceList& indices);
-		~StandardMesh();
-
-		StandardMesh&	operator=(const StandardMesh& instance);
+		MeshBasic(void);
+		MeshBasic(VertexList& vertices, IndiceList& indices);
+		~MeshBasic();
 
 		void	assignBuffer(void);
 };
@@ -45,18 +47,22 @@ class	StandardMesh: public Mesh
 /*                                  FLAT MESH                                 */
 /* ========================================================================== */
 
-class	FlatMesh: public Mesh
+class	MeshFlat: public Mesh
 {
 	private	:
 		VertexFlatList	_vertices;
 
 	public	:
-		FlatMesh(void);
-		FlatMesh(VertexFlatList& vertices, IndiceList& indices);
-		~FlatMesh();
+		MeshFlat(void);
+		MeshFlat(
+			int width,
+			int height,
+			float gridScale = 1.0f
+		);
+		~MeshFlat();
 
-		FlatMesh&	operator=(const FlatMesh& instance);
-
+		void	setData(int row, int col, float distance);
+		void	setNoiseUV(size_t vertexIndex, Vector2 noiseUV);
 		void	assignBuffer(void);
 };
 

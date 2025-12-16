@@ -4,7 +4,7 @@
 /*                         CONSTRUCTOR AND DESTRUCTOR                         */
 /* ========================================================================== */
 
-EBO::EBO(IndicesList& indices)
+EBO::EBO(IndiceList& indices)
 {
 	glGenBuffers(1, &_id);
 	this->bind();

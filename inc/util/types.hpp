@@ -1,6 +1,7 @@
 #ifndef TYPES_HPP
 # define TYPES_HPP
 
+# include <GLFW/glfw3.h>
 # include <glm/glm.hpp>
 
 # include <vector>
@@ -43,6 +44,6 @@ struct VertexFlat
 
 typedef std::vector<Vertex>		VertexList;
 typedef std::vector<VertexFlat>	VertexFlatList;
-typedef std::vector<GLuint>		IndicesList;
+typedef std::vector<GLuint>		IndiceList;
 
 #endif /* TYPES_HPP ========================================================= */

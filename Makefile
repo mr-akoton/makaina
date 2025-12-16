@@ -38,7 +38,9 @@ EXT_CXX		= imgui/imgui.cpp \
 SRC			= core/object/EBO.cpp \
 			  core/object/VAO.cpp \
 			  core/object/VBO.cpp \
+			  core/Camera.cpp \
 			  core/Engine.cpp \
+			  core/Shader.cpp \
 			  core/Window.cpp \
 			  util/iomanip.cpp \
 			  main.cpp

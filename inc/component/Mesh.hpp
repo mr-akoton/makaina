@@ -1,11 +1,11 @@
 #ifndef MESH_HPP
 # define MESH_HPP
 
-# include <glad/glad.h>
-# include <GLFW/glfw3.h>
 # include <glm/glm.hpp>
 
 # include <core/Object.hpp>
+# include <core/Camera.hpp>
+# include <core/Shader.hpp>
 
 /* ========================================================================== */
 /*                                    MESH                                    */
@@ -13,18 +13,32 @@
 
 class	Mesh
 {
-	private	:
+	protected	:
 		VAO			_vao;
-		VertexList	_vertices;
-		IndicesList	_indices;
+		IndiceList	_indices;
 	
+	public		:
+		void			draw(Shader& shader, Camera& camera);
+		virtual void	assignBuffer(void) = 0;
+};
+
+/* ========================================================================== */
+/*                                STANDARD MESH                               */
+/* ========================================================================== */
+
+class	StandardMesh: public Mesh
+{
+	private	:
+		VertexList	_vertices;
+
 	public	:
-		Mesh(void);
-		Mesh(VertexList& vertices, IndicesList& indices);
-		~Mesh();
+		StandardMesh(void);
+		StandardMesh(VertexList& vertices, IndiceList& indices);
+		~StandardMesh();
+
+		StandardMesh&	operator=(const StandardMesh& instance);
 
 		void	assignBuffer(void);
-		void	draw(Camera& camera);
 };
 
 /* ========================================================================== */
@@ -34,17 +48,16 @@ class	Mesh
 class	FlatMesh: public Mesh
 {
 	private	:
-		VAO				_vao;
 		VertexFlatList	_vertices;
-		IndicesList		_indices;
 
 	public	:
 		FlatMesh(void);
-		FlatMesh(VertexFlatList& vertices, IndicesList& indices);
+		FlatMesh(VertexFlatList& vertices, IndiceList& indices);
 		~FlatMesh();
-	
+
+		FlatMesh&	operator=(const FlatMesh& instance);
+
 		void	assignBuffer(void);
-		void	draw(Camera& camera);
 };
 
 #endif /* MESH_HPP ========================================================== */

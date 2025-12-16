@@ -63,7 +63,7 @@ class	EBO
 		GLuint	_id;
 
 	public	:
-		EBO(IndicesList& indices);
+		EBO(IndiceList& indices);
 		~EBO();
 
 		void	bind(void) const;

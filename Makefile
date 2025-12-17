@@ -35,13 +35,7 @@ EXT_CXX		= imgui/imgui.cpp \
 			  imgui/imgui_widgets.cpp \
 			  stb/stb_image.cpp
 
-SRC			= graphic/mesh/MeshFlat.cpp \
-			  graphic/mesh/Mesh.cpp \
-			  graphic/mesh/MeshBasic.cpp \
-			  graphic/texture/TextureFramebuffer.cpp \
-			  graphic/texture/TextureNoise.cpp \
-			  graphic/texture/TextureBasic.cpp \
-			  graphic/texture/Texture.cpp \
+SRC			= component/Terrain.cpp \
 			  core/object/EBO.cpp \
 			  core/object/VAO.cpp \
 			  core/object/VBO.cpp \
@@ -49,6 +43,13 @@ SRC			= graphic/mesh/MeshFlat.cpp \
 			  core/Engine.cpp \
 			  core/Shader.cpp \
 			  core/Window.cpp \
+			  graphic/mesh/MeshFlat.cpp \
+			  graphic/mesh/Mesh.cpp \
+			  graphic/mesh/MeshBasic.cpp \
+			  graphic/texture/TextureFramebuffer.cpp \
+			  graphic/texture/TextureNoise.cpp \
+			  graphic/texture/TextureBasic.cpp \
+			  graphic/texture/Texture.cpp \
 			  util/iomanip.cpp \
 			  main.cpp
 

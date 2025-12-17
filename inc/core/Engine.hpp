@@ -8,6 +8,7 @@
 # include <GLFW/glfw3.h>
 
 # include <core/Window.hpp>
+# include <core/Camera.hpp>
 # include <util/types.hpp>
 
 # include <exception>
@@ -22,6 +23,7 @@ class	Engine
 {
 	private	:
 		Window	_window;
+		Camera	_camera;
 
 
 	public	:

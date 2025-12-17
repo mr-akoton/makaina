@@ -44,9 +44,9 @@ void	MeshFlat::assignBuffer(void)
 
 void	MeshFlat::setData(int row, int col, float distance)
 {
-	for (size_t	z = 0; z < col; z++)
+	for (int z = 0; z < col; z++)
 	{
-		for (size_t x = 0; x < row; x++)
+		for (int x = 0; x < row; x++)
 		{
 			_vertices.push_back(
 				VertexFlat({
@@ -57,7 +57,7 @@ void	MeshFlat::setData(int row, int col, float distance)
 
 			if (x >= col - 1 and z >= row - 1)
 			{
-				int     i = (z * col) + x;
+				int	i = (z * col) + x;
 
 				_indices.push_back(i);
 				_indices.push_back(i + row);

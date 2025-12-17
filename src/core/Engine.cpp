@@ -1,10 +1,12 @@
 #include <core/Engine.hpp>
+#include <component/Terrain.hpp>
 
 /* ========================================================================== */
 /*                         CONSTRUCTOR AND DESTRUCTOR                         */
 /* ========================================================================== */
 
-Engine::Engine(void)
+Engine::Engine(void):
+	_camera(WINDOW_WIDTH, WINDOW_HEIGHT)
 {
 	// Initialize GLFW
 	glfwInit();
@@ -41,12 +43,17 @@ Engine::~Engine()
 void	Engine::run(void)
 {
 	Color3	bgColor(0.655f, 0.824f, 0.910f);
+	Terrain	terrain(100, 100);
+	terrain.initNoiseTexture(200, 200);
 
 	while (_window.isOpen())
 	{
 		_window.pollEvents();
 		_input();
-		_window.clear(bgColor, GL_COLOR_BUFFER_BIT);
+		_window.clear(bgColor, GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+		terrain.draw(_camera);
+
 		_window.update();
 	}
 }

@@ -30,7 +30,9 @@ void	MeshFlat::assignBuffer(void)
 	_vao.bind();
 
 	VBO	vbo(_vertices, GL_DYNAMIC_DRAW);
+	vbo.bind();
 	EBO	ebo(_indices);
+	ebo.bind();
 
 	_vao.linkAttribute(vbo, 0, 3, GL_FLOAT, sizeof(VertexFlat),
 		(void *)0);
@@ -41,6 +43,8 @@ void	MeshFlat::assignBuffer(void)
 	vbo.unbind();
 	ebo.unbind();
 }
+
+#include <iostream>
 
 void	MeshFlat::setData(int row, int col, float distance)
 {
@@ -55,9 +59,12 @@ void	MeshFlat::setData(int row, int col, float distance)
 				})
 			);
 
-			if (x >= col - 1 and z >= row - 1)
+
+			if (x < col - 1 and z < row - 1)
 			{
 				int	i = (z * col) + x;
+
+				std::cout << _vertices[i].position.x << " " << _vertices[i].position.z << std::endl;
 
 				_indices.push_back(i);
 				_indices.push_back(i + row);
@@ -79,3 +86,13 @@ void	MeshFlat::setNoiseUV(size_t vertexIndex, Vector2 noiseUV)
 		_vertices[vertexIndex].noiseUV = noiseUV;
 }
 
+void	MeshFlat::draw(Shader& shader, Camera& camera)
+{
+	_vao.bind();
+	shader.enable();
+
+	shader.setVec3("u_viewPosition", camera.position);
+	camera.updateShaderMatrix(shader, "u_projection");
+
+	glDrawElements(GL_TRIANGLES, _indices.size(), GL_UNSIGNED_INT, 0);
+}

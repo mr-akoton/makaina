@@ -31,7 +31,9 @@ void	MeshBasic::assignBuffer(void)
 	_vao.bind();
 
 	VBO vbo(_vertices, GL_STATIC_DRAW);
+	vbo.bind();
 	EBO ebo(_indices);
+	ebo.bind();
 
 	_vao.linkAttribute(vbo, 0, 3, GL_FLOAT, sizeof(Vertex),
 		(void *)0);
@@ -45,4 +47,15 @@ void	MeshBasic::assignBuffer(void)
 	_vao.unbind();
 	vbo.unbind();
 	ebo.unbind();
+}
+
+void	MeshBasic::draw(Shader& shader, Camera& camera)
+{
+	_vao.bind();
+	shader.enable();
+
+	shader.setVec3("u_viewPosition", camera.position);
+	camera.updateShaderMatrix(shader, "u_projection");
+
+	glDrawElements(GL_TRIANGLES, _indices.size(), GL_UNSIGNED_INT, 0);
 }

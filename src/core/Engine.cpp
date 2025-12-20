@@ -52,6 +52,9 @@ void	Engine::run(void)
 		_input();
 		_window.clear(bgColor, GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+		_camera.handleInput(_window);
+		_camera.updateMatrix(45.0f, 0.1f, 100.0f);
+
 		terrain.draw(_camera);
 
 		_window.update();

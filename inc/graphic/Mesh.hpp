@@ -22,7 +22,7 @@ class	Mesh
 		Mesh(IndiceList& indices);
 		~Mesh();
 
-		void			draw(Shader& shader, Camera& camera);
+		virtual void	draw(Shader& shader, Camera& camera) = 0;
 		virtual void	assignBuffer(void) = 0;
 };
 
@@ -41,6 +41,7 @@ class	MeshBasic: public Mesh
 		~MeshBasic();
 
 		void	assignBuffer(void);
+		void	draw(Shader& shader, Camera& camera);
 };
 
 /* ========================================================================== */
@@ -64,6 +65,7 @@ class	MeshFlat: public Mesh
 		void	setData(int row, int col, float distance);
 		void	setNoiseUV(size_t vertexIndex, Vector2 noiseUV);
 		void	assignBuffer(void);
+		void	draw(Shader& shader, Camera& camera);
 };
 
 #endif /* MESH_HPP ========================================================== */
